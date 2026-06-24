@@ -293,7 +293,7 @@
         </div>
 
         <!-- Submit -->
-        <button type="submit" class="btn-submit">Masuk</button>
+        <button type="submit" id="submitBtn" class="btn-submit">Masuk</button>
 
       </form>
 
@@ -650,6 +650,21 @@
           <circle cx="12" cy="12" r="3"/>`;
       }
     });
+  });
+
+  // Mencegah double submit
+  document.getElementById('loginForm').addEventListener('submit', function(e) {
+    const btn = document.getElementById('submitBtn');
+    if (btn) {
+      if (this.checkValidity()) {
+        btn.innerHTML = 'Memproses...';
+        btn.style.opacity = '0.7';
+        btn.style.cursor = 'not-allowed';
+        setTimeout(() => {
+          btn.disabled = true;
+        }, 50);
+      }
+    }
   });
 </script>
 </body>

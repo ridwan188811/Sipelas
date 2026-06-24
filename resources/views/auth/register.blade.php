@@ -315,7 +315,7 @@
         </div>
 
         <!-- Submit -->
-        <button type="submit" class="btn-submit">Daftar</button>
+        <button type="submit" id="submitBtn" class="btn-submit">Daftar</button>
 
       </form>
 
@@ -349,6 +349,23 @@
           <circle cx="12" cy="12" r="3"/>`;
       }
     });
+  });
+
+  // Mencegah double submit yang menyebabkan bug "email sudah digunakan"
+  document.getElementById('registerForm').addEventListener('submit', function(e) {
+    const btn = document.getElementById('submitBtn');
+    if (btn) {
+      // Jika form valid, ubah teks dan disable tombol
+      if (this.checkValidity()) {
+        btn.innerHTML = 'Memproses...';
+        btn.style.opacity = '0.7';
+        btn.style.cursor = 'not-allowed';
+        // Disable tombol setelah sedikit delay agar form tetap ter-submit
+        setTimeout(() => {
+          btn.disabled = true;
+        }, 50);
+      }
+    }
   });
 </script>
 <!-- SweetAlert2 -->
