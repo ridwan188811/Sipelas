@@ -267,3 +267,13 @@ Route::middleware(['auth'])->group(function () {
         ]);
     })->name('check-notif');
 });
+
+Route::get('/setup-database', function () {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('migrate:fresh', ['--seed' => true, '--force' => true]);
+        return 'Database successfully migrated and seeded!';
+    } catch (\Exception $e) {
+        return $e->getMessage();
+    }
+});
+
