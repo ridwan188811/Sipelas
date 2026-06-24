@@ -180,18 +180,18 @@
             <tr>
                 <!-- Logo -->
                 <td class="logo-container">
-                    @php
-                        // Gunakan public_path agar DomPDF dapat membaca file lokal (jika chroot disetting dengan benar)
-                        // atau bisa menggunakan konversi base64 langsung.
-                        $logoPath = base_path('logo_tasik/Seal_of_the_City_of_Tasikmalaya.svg.png');
-                        if(!file_exists($logoPath)) {
-                            // fallback
-                            $logoPath = '';
-                        }
-                    @endphp
-                    @if($logoPath)
-                    <img src="{{ $logoPath }}" alt="Logo Tasikmalaya">
-                    @endif
+                      @php
+                          // Gunakan base64 agar DomPDF 100% bisa membaca file baik di lokal maupun di Vercel
+                          $logoPath = base_path('public/logo/Seal_of_the_City_of_Tasikmalaya.svg.png');
+                          $logoSrc = '';
+                          if(file_exists($logoPath)) {
+                              $logoData = base64_encode(file_get_contents($logoPath));
+                              $logoSrc = 'data:image/png;base64,' . $logoData;
+                          }
+                      @endphp
+                      @if($logoSrc)
+                      <img src="{{ $logoSrc }}" alt="Logo Tasikmalaya">
+                      @endif
                 </td>
                 
                 <!-- Teks Tengah -->
