@@ -69,7 +69,7 @@
 <!-- Penutup -->
 <p class="text-justify mt-10">
     adalah benar-benar penduduk kami yang kondisi ekonominya termasuk dalam kategori tidak mampu.<br>
-    Surat keterangan ini dibuat untuk keperluan {{ ucwords(str_replace('_', ' ', $pengajuan->data_isian['keperluan'] ?? 'Melengkapi Persyaratan Perubahan status pekerjaan pada Kartu Keluarga')) }}.
+    Surat keterangan ini dibuat untuk keperluan {{ strtolower(str_replace('_', ' ', $pengajuan->data_isian['keperluan'] ?? 'melengkapi persyaratan')) }}@if(isset($pengajuan->data_isian['nama_yang_menggunakan_surat']) || isset($pengajuan->data_isian['nama_yang_dibantu'])) atas nama <strong>{{ strtoupper($pengajuan->data_isian['nama_yang_menggunakan_surat'] ?? $pengajuan->data_isian['nama_yang_dibantu'] ?? '') }}</strong>@endif.
 </p>
 <p class="text-justify mt-10">
     Demikian agar dipergunakan sebagaimana mestinya.
