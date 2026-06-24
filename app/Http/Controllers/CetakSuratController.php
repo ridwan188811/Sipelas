@@ -56,9 +56,8 @@ class CetakSuratController extends Controller
         // Generate QR Code if token exists
         $qrCode = null;
         if ($pengajuan->token_validasi) {
-            // Force using APP_URL from .env so it works on mobile devices even if accessed via .test domain locally
-            $path = route('validasi', ['token' => $pengajuan->token_validasi], false);
-            $qrUrl = rtrim(config('app.url'), '/') . $path;
+            // Gunakan absolute route otomatis agar menyesuaikan dengan domain Vercel yang sedang diakses
+            $qrUrl = route('validasi', ['token' => $pengajuan->token_validasi]);
             $qrCode = base64_encode(\SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')->size(90)->margin(0)->generate($qrUrl));
         }
 
