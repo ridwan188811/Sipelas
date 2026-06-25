@@ -16,7 +16,7 @@
                     <!-- Header -->
                     <tr>
                         <td align="center" style="background-color: #1a4068; padding: 40px 30px;">
-                            <img src="{{ $message->embed(public_path('images/logo_tasikmalaya.png')) }}" alt="Logo" style="height: 60px; margin-bottom: 15px; display: block;">
+                            <img src="{{ asset('images/logo_tasikmalaya.png') }}" alt="Logo" style="height: 60px; margin-bottom: 15px; display: block;">
                             <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 800; letter-spacing: 1px;">SIPELAS</h1>
                             <p style="color: #cbd5e1; margin: 10px 0 0 0; font-size: 14px; line-height: 1.5;">Sistem Informasi Pelayanan Masyarakat<br>Kelurahan Sambongpari</p>
                         </td>
