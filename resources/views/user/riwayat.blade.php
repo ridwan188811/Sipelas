@@ -630,7 +630,7 @@
                     <a href="{{ route('user.detail-pengajuan', ['id' => $pengajuan->id]) }}" class="btn btn-detail">Detail</a>
                   @else
                     <a href="{{ route('user.detail-pengajuan', ['id' => $pengajuan->id]) }}" class="btn btn-detail">Detail</a>
-                    <a href="{{ route('user.ajukan-surat') }}" class="btn btn-ulang">Ajukan ulang</a>
+                    <a href="{{ route('user.ajukan-surat', ['resubmit_id' => $pengajuan->id]) }}" class="btn btn-ulang">Ajukan ulang</a>
                   @endif
                 
 
