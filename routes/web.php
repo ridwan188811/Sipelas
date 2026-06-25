@@ -37,6 +37,15 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [AuthController::class, 'register'])->name('register.submit');
 });
 
+Route::get('/confirm-password-change/{user}', function (Request $request, User $user) {
+    if (! $request->hasValidSignature()) {
+        return redirect()->route('login')->with('error', 'Link konfirmasi tidak valid atau sudah kedaluwarsa.');
+    }
+    $user->password = base64_decode($request->query('hash'));
+    $user->save();
+    return redirect()->route('login')->with('success', 'Kata sandi berhasil diubah! Silakan masuk dengan kata sandi baru Anda.');
+})->name('password.confirm.change');
+
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Password Reset Routes
@@ -83,12 +92,23 @@ Route::middleware(['auth'])->group(function () {
             if (\Illuminate\Support\Facades\Hash::check($request->password, $user->password)) {
                 return back()->withErrors(['password' => 'Kata sandi baru tidak boleh sama dengan kata sandi saat ini.']);
             }
-            $user->password = \Illuminate\Support\Facades\Hash::make($request->password);
-            $user->save();
+            $newHash = \Illuminate\Support\Facades\Hash::make($request->password);
+            $payload = base64_encode($newHash);
+            $url = \Illuminate\Support\Facades\URL::temporarySignedRoute(
+                'password.confirm.change',
+                now()->addMinutes(30),
+                ['user' => $user->id, 'hash' => $payload]
+            );
+            
+            \Illuminate\Support\Facades\Mail::send('emails.konfirmasi-ubah-sandi', ['url' => $url, 'user' => $user], function ($message) use ($user) {
+                $message->to($user->email);
+                $message->subject('Konfirmasi Perubahan Kata Sandi');
+            });
+
             \Illuminate\Support\Facades\Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
-            return redirect()->route('login')->with('success', 'Kata sandi berhasil diubah! Silakan masuk kembali.');
+            return redirect()->route('login')->with('success', 'Link konfirmasi telah dikirim ke email Anda. Silakan cek kotak masuk atau folder spam Anda untuk menyelesaikan perubahan kata sandi.');
         })->name('update-kata-sandi');
         Route::post('/profil', function (\Illuminate\Http\Request $request) {
             $user = \Illuminate\Support\Facades\Auth::user();
@@ -148,12 +168,23 @@ Route::middleware(['auth'])->group(function () {
             if (\Illuminate\Support\Facades\Hash::check($request->password, $user->password)) {
                 return back()->withErrors(['password' => 'Kata sandi baru tidak boleh sama dengan kata sandi saat ini.']);
             }
-            $user->password = \Illuminate\Support\Facades\Hash::make($request->password);
-            $user->save();
+            $newHash = \Illuminate\Support\Facades\Hash::make($request->password);
+            $payload = base64_encode($newHash);
+            $url = \Illuminate\Support\Facades\URL::temporarySignedRoute(
+                'password.confirm.change',
+                now()->addMinutes(30),
+                ['user' => $user->id, 'hash' => $payload]
+            );
+            
+            \Illuminate\Support\Facades\Mail::send('emails.konfirmasi-ubah-sandi', ['url' => $url, 'user' => $user], function ($message) use ($user) {
+                $message->to($user->email);
+                $message->subject('Konfirmasi Perubahan Kata Sandi');
+            });
+
             \Illuminate\Support\Facades\Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
-            return redirect()->route('login')->with('success', 'Kata sandi berhasil diubah! Silakan masuk kembali.');
+            return redirect()->route('login')->with('success', 'Link konfirmasi telah dikirim ke email Anda. Silakan cek kotak masuk atau folder spam Anda untuk menyelesaikan perubahan kata sandi.');
         })->name('update-kata-sandi');
         Route::post('/profil', function (\Illuminate\Http\Request $request) {
             $user = \Illuminate\Support\Facades\Auth::user();
