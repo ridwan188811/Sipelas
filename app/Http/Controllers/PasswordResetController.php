@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Mail;
 use App\Models\User;
 
 class PasswordResetController extends Controller
@@ -34,7 +36,18 @@ class PasswordResetController extends Controller
             return back()->withErrors(['email' => 'Email tidak terdaftar dalam sistem.'])->onlyInput('email');
         }
 
-        return redirect()->route('password.reset.form', ['email' => $request->email]);
+        $url = URL::temporarySignedRoute(
+            'password.reset.form',
+            now()->addMinutes(30),
+            ['email' => $request->email]
+        );
+
+        Mail::send('emails.lupa-kata-sandi', ['url' => $url, 'user' => $user], function ($message) use ($user) {
+            $message->to($user->email);
+            $message->subject('Reset Kata Sandi');
+        });
+
+        return back()->with('success', 'Tautan untuk mereset kata sandi telah dikirim ke email Anda. Silakan cek kotak masuk atau folder spam.');
     }
 
     /**
@@ -42,6 +55,10 @@ class PasswordResetController extends Controller
      */
     public function resetForm(Request $request)
     {
+        if (!$request->hasValidSignature()) {
+            abort(401, 'Tautan reset kata sandi tidak valid atau sudah kedaluwarsa.');
+        }
+
         if (!$request->email) {
             return redirect()->route('password.request');
         }

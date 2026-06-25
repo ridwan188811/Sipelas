@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
   <link rel="icon" type="image/png" href="{{ asset('images/logo_tasikmalaya.png') }}">
@@ -234,9 +234,9 @@
 
 
       <!-- Status Alert -->
-      @if (session('status'))
+      @if (session('success'))
         <div style="background: #dcfce7; color: #166534; padding: 12px 16px; border-radius: 8px; font-size: .88rem; font-weight: 500; margin-bottom: 24px;">
-            {{ session('status') }}
+            {{ session('success') }}
         </div>
       @endif
 
@@ -266,7 +266,7 @@
         </div>
 
         <!-- Submit -->
-        <button type="submit" class="btn-submit">Buat Kata Sandi Baru</button>
+        <button type="submit" class="btn-submit">Kirim Link</button>
       </form>
 
       <!-- Footer link -->
