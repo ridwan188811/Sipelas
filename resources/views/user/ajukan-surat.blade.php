@@ -1961,7 +1961,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 @if($resubmitData)
 <script>
-document.addEventListener("DOMContentLoaded", () => {
+(function() {
     // 1. Pilih Jenis Surat
     const selectJenis = document.getElementById('jenis_surat');
     const jenisSurat = "{{ $resubmitData->jenis_surat }}";
@@ -1983,7 +1983,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
     }
-});
+})();
 </script>
 @endif
 
