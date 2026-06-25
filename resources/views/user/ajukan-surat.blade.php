@@ -1958,6 +1958,35 @@ document.addEventListener('DOMContentLoaded', function() {
 </style>
 <script src="{{ asset('js/notif.js') }}"></script>
 <script src="{{ asset('js/logout.js') }}"></script>
+
+@if($resubmitData)
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    // 1. Pilih Jenis Surat
+    const selectJenis = document.getElementById('jenis_surat');
+    const jenisSurat = "{{ $resubmitData->jenis_surat }}";
+    if(selectJenis) {
+        selectJenis.value = jenisSurat;
+        selectJenis.dispatchEvent(new Event('change'));
+    }
+
+    // 2. Isi data form otomatis
+    const dataIsian = @json($resubmitData->data_isian);
+    if(dataIsian) {
+        const activeForm = document.getElementById('form-' + jenisSurat);
+        if (activeForm) {
+            for (const key in dataIsian) {
+                const el = activeForm.querySelector(`[name="${key}"]`);
+                if (el) {
+                    el.value = dataIsian[key];
+                }
+            }
+        }
+    }
+});
+</script>
+@endif
+
 </body>
 </html>
 

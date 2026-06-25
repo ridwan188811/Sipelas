@@ -547,7 +547,7 @@
               Perbaiki dokumen yang bermasalah sesuai catatan petugas, lalu ajukan kembali. Pastikan foto dokumen terang, terbaca jelas, dan sesuai dengan data yang diisi.
             </div>
             <div style="display: flex; flex-direction: column; gap: 12px;">
-              <a href="{{ route('user.ajukan-surat', ['ref' => $pengajuan->id]) }}" style="background: #991b1b; color: white; text-align: center; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.9rem;">Ajukan Ulang</a>
+              <a href="{{ route('user.ajukan-surat', ['resubmit_id' => $pengajuan->id]) }}" style="background: #991b1b; color: white; text-align: center; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.9rem;">Ajukan Ulang</a>
               
               <form action="{{ route('user.pengajuan.destroy', $pengajuan->id) }}" method="POST" style="margin: 0;" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengajuan ini secara permanen?');">
                 @csrf
