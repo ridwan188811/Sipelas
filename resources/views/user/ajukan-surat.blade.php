@@ -1962,26 +1962,36 @@ document.addEventListener('DOMContentLoaded', function() {
 @if($resubmitData)
 <script>
 (function() {
-    // 1. Pilih Jenis Surat
-    const selectJenis = document.getElementById('jenis_surat');
-    const jenisSurat = "{{ $resubmitData->jenis_surat }}";
-    if(selectJenis) {
-        selectJenis.value = jenisSurat;
-        selectJenis.dispatchEvent(new Event('change'));
-    }
+    try {
+        // 1. Pilih Jenis Surat
+        const selectJenis = document.getElementById('jenis_surat');
+        const jenisSurat = "{{ $resubmitData->jenis_surat }}";
+        if(selectJenis) {
+            selectJenis.value = jenisSurat;
+            if (typeof toggleForm === 'function') {
+                toggleForm(jenisSurat);
+            } else {
+                selectJenis.dispatchEvent(new Event('change'));
+            }
+        }
 
-    // 2. Isi data form otomatis
-    const dataIsian = @json($resubmitData->data_isian);
-    if(dataIsian) {
-        const activeForm = document.getElementById('form-' + jenisSurat);
-        if (activeForm) {
-            for (const key in dataIsian) {
-                const el = activeForm.querySelector(`[name="${key}"]`);
-                if (el) {
-                    el.value = dataIsian[key];
+        // 2. Isi data form otomatis
+        let rawData = @json($resubmitData->data_isian);
+        let dataIsian = typeof rawData === 'string' ? JSON.parse(rawData) : rawData;
+        
+        if(dataIsian) {
+            const activeForm = document.getElementById('form-' + jenisSurat);
+            if (activeForm) {
+                for (const key in dataIsian) {
+                    const el = activeForm.querySelector(`[name="${key}"]`);
+                    if (el) {
+                        el.value = dataIsian[key];
+                    }
                 }
             }
         }
+    } catch (e) {
+        console.error("Auto-populate error:", e);
     }
 })();
 </script>
