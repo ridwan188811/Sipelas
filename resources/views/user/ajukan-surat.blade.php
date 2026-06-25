@@ -1840,9 +1840,63 @@ document.addEventListener('DOMContentLoaded', function() {
         <p class="custom-conf-text">Apakah Anda yakin data yang diisi sudah benar?<br>Data yang telah dikirim tidak dapat diubah kembali.</p>
         <div class="custom-conf-actions">
           <button type="button" class="custom-conf-btn-cancel" onclick="Swal.close()">Batal</button>
-          <button type="button" class="custom-conf-btn-confirm" onclick="document.getElementById('${formId}').submit()">Ya, Kirim</button>
+          <button type="button" class="custom-conf-btn-confirm" onclick="submitFormAjax('${formId}')">Ya, Kirim</button>
         </div>
       `
+    });
+  }
+
+  function submitFormAjax(formId) {
+    const form = document.getElementById(formId);
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+
+    Swal.fire({
+        title: 'Mengirim...',
+        text: 'Mohon tunggu sebentar',
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); }
+    });
+
+    const formData = new FormData(form);
+
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(async response => {
+        if (response.ok) {
+            const contentType = response.headers.get("content-type");
+            if (contentType && contentType.indexOf("application/json") !== -1) {
+                const data = await response.json();
+                if (data.redirect) {
+                    window.location.href = data.redirect;
+                    return;
+                }
+            } else if (response.redirected) {
+                window.location.href = response.url;
+                return;
+            }
+            window.location.href = '{{ route("user.riwayat") }}';
+        } else if (response.status === 422) {
+            const data = await response.json();
+            let errorMessage = '';
+            for (let field in data.errors) {
+                errorMessage += data.errors[field].join('\\n') + '\\n';
+            }
+            Swal.fire('Validasi Gagal', errorMessage, 'error');
+        } else {
+            Swal.fire('Error', 'Terjadi kesalahan pada server. Coba lagi.', 'error');
+        }
+    })
+    .catch(error => {
+        console.error(error);
+        Swal.fire('Error', 'Gagal mengirim data. Periksa koneksi Anda dan coba lagi.', 'error');
     });
   }
 

@@ -76,6 +76,10 @@ class PengajuanSuratController extends Controller
                     'catatan_admin' => null,
                 ]);
 
+                if ($request->ajax()) {
+                    session()->flash('success', 'Pengajuan ulang berhasil dikirim!');
+                    return response()->json(['redirect' => route('user.riwayat')]);
+                }
                 return redirect()->route('user.riwayat')->with('success', 'Pengajuan ulang berhasil dikirim!');
             }
         }
@@ -89,6 +93,10 @@ class PengajuanSuratController extends Controller
             'dokumen_pendukung' => count($dokumenPendukung) > 0 ? $dokumenPendukung : null,
         ]);
 
+        if ($request->ajax()) {
+            session()->flash('success', 'Pengajuan surat berhasil dikirim!');
+            return response()->json(['redirect' => route('user.riwayat')]);
+        }
         return redirect()->route('user.riwayat')->with('success', 'Pengajuan surat berhasil dikirim!');
     }
 
