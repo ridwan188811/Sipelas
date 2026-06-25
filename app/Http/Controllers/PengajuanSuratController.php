@@ -20,24 +20,38 @@ class PengajuanSuratController extends Controller
 
     public function store(Request $request)
     {
+        $pengajuanLama = null;
+        if ($request->filled('resubmit_id')) {
+            $pengajuanLama = PengajuanSurat::where('id', $request->resubmit_id)
+                ->where('user_id', Auth::id())
+                ->first();
+        }
+
         $rules = [
             'jenis_surat' => 'required|in:sktm,sku,domisili',
         ];
 
+        $getFileRule = function($fieldName) use ($pengajuanLama) {
+            if ($pengajuanLama && isset($pengajuanLama->dokumen_pendukung[$fieldName])) {
+                return 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
+            }
+            return 'required|file|mimes:jpg,jpeg,png,pdf|max:2048';
+        };
+
         if ($request->jenis_surat === 'sktm') {
-            $rules['dokumen_surat_pengantar_rt_rw'] = 'required|file|mimes:jpg,jpeg,png,pdf|max:2048';
-            $rules['dokumen_fotokopi_ktp_pemohon'] = 'required|file|mimes:jpg,jpeg,png,pdf|max:2048';
-            $rules['dokumen_fotokopi_keluarga_kk'] = 'required|file|mimes:jpg,jpeg,png,pdf|max:2048';
+            $rules['dokumen_surat_pengantar_rt_rw'] = $getFileRule('dokumen_surat_pengantar_rt_rw');
+            $rules['dokumen_fotokopi_ktp_pemohon'] = $getFileRule('dokumen_fotokopi_ktp_pemohon');
+            $rules['dokumen_fotokopi_keluarga_kk'] = $getFileRule('dokumen_fotokopi_keluarga_kk');
         } elseif ($request->jenis_surat === 'sku') {
-            $rules['dokumen_surat_pengantar_rt_rw'] = 'required|file|mimes:jpg,jpeg,png,pdf|max:2048';
-            $rules['dokumen_fotokopi_ktp_pemohon'] = 'required|file|mimes:jpg,jpeg,png,pdf|max:2048';
-            $rules['dokumen_fotokopi_keluarga_kk'] = 'required|file|mimes:jpg,jpeg,png,pdf|max:2048';
-            $rules['dokumen_foto_tempat_usaha'] = 'required|file|mimes:jpg,jpeg,png,pdf|max:2048';
+            $rules['dokumen_surat_pengantar_rt_rw'] = $getFileRule('dokumen_surat_pengantar_rt_rw');
+            $rules['dokumen_fotokopi_ktp_pemohon'] = $getFileRule('dokumen_fotokopi_ktp_pemohon');
+            $rules['dokumen_fotokopi_keluarga_kk'] = $getFileRule('dokumen_fotokopi_keluarga_kk');
+            $rules['dokumen_foto_tempat_usaha'] = $getFileRule('dokumen_foto_tempat_usaha');
         } elseif ($request->jenis_surat === 'domisili') {
-            $rules['dokumen_surat_pengantar_rt_rw'] = 'required|file|mimes:jpg,jpeg,png,pdf|max:2048';
-            $rules['dokumen_fotokopi_ktp_pemohon'] = 'required|file|mimes:jpg,jpeg,png,pdf|max:2048';
-            $rules['dokumen_fotokopi_keluarga_kk'] = 'required|file|mimes:jpg,jpeg,png,pdf|max:2048';
-            $rules['dokumen_surat_pernyataan_domisili___pemohon'] = 'required|file|mimes:jpg,jpeg,png,pdf|max:2048';
+            $rules['dokumen_surat_pengantar_rt_rw'] = $getFileRule('dokumen_surat_pengantar_rt_rw');
+            $rules['dokumen_fotokopi_ktp_pemohon'] = $getFileRule('dokumen_fotokopi_ktp_pemohon');
+            $rules['dokumen_fotokopi_keluarga_kk'] = $getFileRule('dokumen_fotokopi_keluarga_kk');
+            $rules['dokumen_surat_pernyataan_domisili___pemohon'] = $getFileRule('dokumen_surat_pernyataan_domisili___pemohon');
         }
 
         $request->validate($rules, [

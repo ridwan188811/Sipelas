@@ -5,6 +5,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="csrf-token" content="{{ csrf_token() }}" />
+@php
+    $val = function($field, $default = '') use ($resubmitData) {
+        if ($resubmitData && isset($resubmitData->data_isian[$field])) {
+            return $resubmitData->data_isian[$field];
+        }
+        return $default;
+    };
+    $hasFile = function($field) use ($resubmitData) {
+        return $resubmitData && isset($resubmitData->dokumen_pendukung[$field]);
+    };
+@endphp
   <title>Ajukan Surat - SIPELAS</title>
   <meta name="description" content="Form pengajuan surat SIPELAS - Sistem Informasi Pelayanan Masyarakat Kelurahan Sambongpari" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -841,6 +852,17 @@
         <p class="page-subtitle">Pilih jenis surat yang ingin diajukan, kemudian isi form dengan lengap dan benar</p>
       </div>
 
+      @if($resubmitData)
+      <div style="background-color: #fffbeb; color: #b45309; padding: 16px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #fcd34d; display: flex; gap: 12px; align-items: flex-start;">
+        <svg style="width: 24px; height: 24px; flex-shrink: 0; margin-top: 2px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+        <div>
+          <strong style="display:block; margin-bottom: 4px; font-size: 1.05rem;">Pengajuan Sebelumnya Ditolak</strong>
+          <p style="margin: 0; font-size: 0.95rem; line-height: 1.5;">Catatan Admin: <b>{{ $resubmitData->catatan_admin ?? 'Tidak ada catatan spesifik.' }}</b></p>
+          <p style="margin: 6px 0 0 0; font-size: 0.85rem; opacity: 0.9;">Silakan perbaiki data atau dokumen yang salah di bawah ini. Anda tidak perlu mengunggah ulang dokumen yang sudah benar.</p>
+        </div>
+      </div>
+      @endif
+
       @if ($errors->any())
       <div style="background-color: #fee2e2; color: #b91c1c; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #fca5a5;">
         <strong style="display:block; margin-bottom: 5px;">Gagal mengirim pengajuan! Periksa kembali isian Anda:</strong>
@@ -1055,33 +1077,33 @@
               <div class="form-input-group form-col-full">
                 <label class="input-label">Surat Pengantar RT/RW <span class="text-red">*</span></label>
                 <label class="file-drop-area">
-                  <input type="file" name="dokumen_surat_pengantar_rt_rw" class="file-input" accept=".jpg,.jpeg,.png,.pdf" required style="display:none;" onchange="this.parentElement.querySelector('.file-drop-text').textContent = this.files[0] ? this.files[0].name : 'Klik untuk unggah file (JPG, PNG, PDF - maks. 2MB)'">
+                  <input type="file" name="dokumen_surat_pengantar_rt_rw" class="file-input" accept=".jpg,.jpeg,.png,.pdf" {{ $hasFile('dokumen_surat_pengantar_rt_rw') ? '' : 'required' }} style="display:none;" onchange="this.parentElement.querySelector('.file-drop-text').textContent = this.files[0] ? this.files[0].name : 'Klik untuk unggah file (JPG, PNG, PDF - maks. 2MB)'">
                   <div class="file-drop-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                   </div>
-                  <div class="file-drop-text">Klik untuk unggah file (JPG, PNG, PDF - maks. 2MB)</div>
+                  <div class="file-drop-text">@if($hasFile('dokumen_surat_pengantar_rt_rw')) <span style="color:var(--blue);font-weight:600;">Sudah ada file sebelumnya. Klik untuk mengganti (opsional).</span> @else Klik untuk unggah file (JPG, PNG, PDF - maks. 2MB) @endif</div>
                 </label>
               </div>
 
               <div class="form-input-group form-col-full">
                 <label class="input-label">Fotokopi KTP Pemohon <span class="text-red">*</span></label>
                 <label class="file-drop-area">
-                  <input type="file" name="dokumen_fotokopi_ktp_pemohon" class="file-input" accept=".jpg,.jpeg,.png,.pdf" required style="display:none;" onchange="this.parentElement.querySelector('.file-drop-text').textContent = this.files[0] ? this.files[0].name : 'Klik untuk unggah file (JPG, PNG, PDF - maks. 2MB)'">
+                  <input type="file" name="dokumen_fotokopi_ktp_pemohon" class="file-input" accept=".jpg,.jpeg,.png,.pdf" {{ $hasFile('dokumen_fotokopi_ktp_pemohon') ? '' : 'required' }} style="display:none;" onchange="this.parentElement.querySelector('.file-drop-text').textContent = this.files[0] ? this.files[0].name : 'Klik untuk unggah file (JPG, PNG, PDF - maks. 2MB)'">
                   <div class="file-drop-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                   </div>
-                  <div class="file-drop-text">Klik untuk unggah file (JPG, PNG, PDF - maks. 2MB)</div>
+                  <div class="file-drop-text">@if($hasFile('dokumen_fotokopi_ktp_pemohon')) <span style="color:var(--blue);font-weight:600;">Sudah ada file sebelumnya. Klik untuk mengganti (opsional).</span> @else Klik untuk unggah file (JPG, PNG, PDF - maks. 2MB) @endif</div>
                 </label>
               </div>
 
               <div class="form-input-group form-col-full">
                 <label class="input-label">Fotokopi Keluarga (KK) <span class="text-red">*</span></label>
                 <label class="file-drop-area">
-                  <input type="file" name="dokumen_fotokopi_keluarga_kk" class="file-input" accept=".jpg,.jpeg,.png,.pdf" required style="display:none;" onchange="this.parentElement.querySelector('.file-drop-text').textContent = this.files[0] ? this.files[0].name : 'Klik untuk unggah file (JPG, PNG, PDF - maks. 2MB)'">
+                  <input type="file" name="dokumen_fotokopi_keluarga_kk" class="file-input" accept=".jpg,.jpeg,.png,.pdf" {{ $hasFile('dokumen_fotokopi_keluarga_kk') ? '' : 'required' }} style="display:none;" onchange="this.parentElement.querySelector('.file-drop-text').textContent = this.files[0] ? this.files[0].name : 'Klik untuk unggah file (JPG, PNG, PDF - maks. 2MB)'">
                   <div class="file-drop-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                   </div>
-                  <div class="file-drop-text">Klik untuk unggah file (JPG, PNG, PDF - maks. 2MB)</div>
+                  <div class="file-drop-text">@if($hasFile('dokumen_fotokopi_keluarga_kk')) <span style="color:var(--blue);font-weight:600;">Sudah ada file sebelumnya. Klik untuk mengganti (opsional).</span> @else Klik untuk unggah file (JPG, PNG, PDF - maks. 2MB) @endif</div>
                 </label>
               </div>
 
@@ -1125,95 +1147,95 @@
                 
                 <div class="form-input-group form-col-full">
                   <label class="input-label">Nama Lengkap <span class="text-red">*</span></label>
-                  <input type="text" name="nama_lengkap" class="input-control" value="{{ Auth::user()->name }}" required>
+                  <input type="text" name="nama_lengkap" class="input-control" value="{{ $val('nama_lengkap', Auth::user()->name) }}" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">NIK <span class="text-red">*</span></label>
-                  <input type="text" name="nik" class="input-control" value="{{ Auth::user()->nik }}" required>
+                  <input type="text" name="nik" class="input-control" value="{{ $val('nik', Auth::user()->nik) }}" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">Jenis Kelamin <span class="text-red">*</span></label>
                   <select name="jenis_kelamin" class="input-control" required>
                   <option value="">-- Pilih --</option>
-                  <option value="l" {{ Auth::user()->jenis_kelamin == 'l' ? 'selected' : '' }}>Laki-laki</option>
-                  <option value="p" {{ Auth::user()->jenis_kelamin == 'p' ? 'selected' : '' }}>Perempuan</option>
+                  <option value="l" {{ $val('jenis_kelamin', Auth::user()->jenis_kelamin) == 'l' ? 'selected' : '' }}>Laki-laki</option>
+                  <option value="p" {{ $val('jenis_kelamin', Auth::user()->jenis_kelamin) == 'p' ? 'selected' : '' }}>Perempuan</option>
                 </select>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">Tempat Lahir <span class="text-red">*</span></label>
-                  <input type="text" name="tempat_lahir" class="input-control" value="{{ Auth::user()->tempat_lahir }}" required>
+                  <input type="text" name="tempat_lahir" class="input-control" value="{{ $val('tempat_lahir', Auth::user()->tempat_lahir) }}" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">Tanggal Lahir <span class="text-red">*</span></label>
-                  <input type="date" name="tanggal_lahir" class="input-control" value="{{ Auth::user()->tanggal_lahir ? \Carbon\Carbon::parse(Auth::user()->tanggal_lahir)->format('Y-m-d') : '' }}" required>
+                  <input type="date" name="tanggal_lahir" class="input-control" value="{{ $val('tanggal_lahir', Auth::user()->tanggal_lahir ? \Carbon\Carbon::parse(Auth::user()->tanggal_lahir)->format('Y-m-d') : '') }}" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">Kewarganegaraan <span class="text-red">*</span></label>
-                  <input type="text" name="kewarganegaraan" class="input-control" value="{{ Auth::user()->kewarganegaraan }}" required>
+                  <input type="text" name="kewarganegaraan" class="input-control" value="{{ $val('kewarganegaraan', Auth::user()->kewarganegaraan) }}" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">Agama <span class="text-red">*</span></label>
                   <select name="agama" class="input-control" required>
                   <option value="">-- Pilih --</option>
-                  <option value="islam" {{ Auth::user()->agama == 'islam' ? 'selected' : '' }}>Islam</option>
-                  <option value="kristen" {{ Auth::user()->agama == 'kristen' ? 'selected' : '' }}>Kristen</option>
-                  <option value="katolik" {{ Auth::user()->agama == 'katolik' ? 'selected' : '' }}>Katolik</option>
-                  <option value="hindu" {{ Auth::user()->agama == 'hindu' ? 'selected' : '' }}>Hindu</option>
-                  <option value="budha" {{ Auth::user()->agama == 'budha' ? 'selected' : '' }}>Budha</option>
-                  <option value="konghucu" {{ Auth::user()->agama == 'konghucu' ? 'selected' : '' }}>Konghucu</option>
+                  <option value="islam" {{ $val('agama', Auth::user()->agama) == 'islam' ? 'selected' : '' }}>Islam</option>
+                  <option value="kristen" {{ $val('agama', Auth::user()->agama) == 'kristen' ? 'selected' : '' }}>Kristen</option>
+                  <option value="katolik" {{ $val('agama', Auth::user()->agama) == 'katolik' ? 'selected' : '' }}>Katolik</option>
+                  <option value="hindu" {{ $val('agama', Auth::user()->agama) == 'hindu' ? 'selected' : '' }}>Hindu</option>
+                  <option value="budha" {{ $val('agama', Auth::user()->agama) == 'budha' ? 'selected' : '' }}>Budha</option>
+                  <option value="konghucu" {{ $val('agama', Auth::user()->agama) == 'konghucu' ? 'selected' : '' }}>Konghucu</option>
                 </select>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">Pekerjaan <span class="text-red">*</span></label>
-                  <input type="text" name="pekerjaan" class="input-control" value="{{ Auth::user()->pekerjaan }}" required>
+                  <input type="text" name="pekerjaan" class="input-control" value="{{ $val('pekerjaan', Auth::user()->pekerjaan) }}" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">Status Pernikahan <span class="text-red">*</span></label>
                   <select name="status_pernikahan" class="input-control" required>
                   <option value="">-- Pilih --</option>
-                  <option value="belum" {{ Auth::user()->status_pernikahan == 'belum' ? 'selected' : '' }}>Belum Kawin</option>
-                  <option value="kawin" {{ Auth::user()->status_pernikahan == 'kawin' ? 'selected' : '' }}>Kawin</option>
-                  <option value="cerai_hidup" {{ Auth::user()->status_pernikahan == 'cerai_hidup' ? 'selected' : '' }}>Cerai Hidup</option>
-                  <option value="cerai_mati" {{ Auth::user()->status_pernikahan == 'cerai_mati' ? 'selected' : '' }}>Cerai Mati</option>
+                  <option value="belum" {{ $val('status_pernikahan', Auth::user()->status_pernikahan) == 'belum' ? 'selected' : '' }}>Belum Kawin</option>
+                  <option value="kawin" {{ $val('status_pernikahan', Auth::user()->status_pernikahan) == 'kawin' ? 'selected' : '' }}>Kawin</option>
+                  <option value="cerai_hidup" {{ $val('status_pernikahan', Auth::user()->status_pernikahan) == 'cerai_hidup' ? 'selected' : '' }}>Cerai Hidup</option>
+                  <option value="cerai_mati" {{ $val('status_pernikahan', Auth::user()->status_pernikahan) == 'cerai_mati' ? 'selected' : '' }}>Cerai Mati</option>
                 </select>
                 </div>
 
                 <div class="form-input-group form-col-full">
                   <label class="input-label">Alamat Lengkap <span class="text-red">*</span></label>
-                  <textarea name="alamat_lengkap" class="input-control" rows="2" required>{{ Auth::user()->alamat_lengkap }}</textarea>
+                  <textarea name="alamat_lengkap" class="input-control" rows="2" required>{{ $val('alamat_lengkap', Auth::user()->alamat_lengkap) }}</textarea>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">RT <span class="text-red">*</span></label>
-                  <input type="text" name="rt" class="input-control" value="{{ Auth::user()->rt }}" required>
+                  <input type="text" name="rt" class="input-control" value="{{ $val('rt', Auth::user()->rt) }}" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">RW <span class="text-red">*</span></label>
-                  <input type="text" name="rw" class="input-control" value="{{ Auth::user()->rw }}" required>
+                  <input type="text" name="rw" class="input-control" value="{{ $val('rw', Auth::user()->rw) }}" required>
                 </div>
 
                 <div class="form-input-group form-col-full">
                   <label class="input-label">Kelurahan <span class="text-red">*</span></label>
-                  <input type="text" name="kelurahan" class="input-control" value="{{ Auth::user()->kelurahan }}" required>
+                  <input type="text" name="kelurahan" class="input-control" value="{{ $val('kelurahan', Auth::user()->kelurahan) }}" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">Kecamatan <span class="text-red">*</span></label>
-                  <input type="text" name="kecamatan" class="input-control" value="{{ Auth::user()->kecamatan }}" required>
+                  <input type="text" name="kecamatan" class="input-control" value="{{ $val('kecamatan', Auth::user()->kecamatan) }}" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">Kota <span class="text-red">*</span></label>
-                  <input type="text" name="kota" class="input-control" value="{{ Auth::user()->kota }}" required>
+                  <input type="text" name="kota" class="input-control" value="{{ $val('kota', Auth::user()->kota) }}" required>
                 </div>
 
               </div>
@@ -1327,44 +1349,44 @@
                 <div class="form-input-group form-col-full">
                   <label class="input-label">Surat Pengantar RT/RW <span class="text-red">*</span></label>
                   <label class="file-drop-area">
-                  <input type="file" name="dokumen_surat_pengantar_rt_rw" class="file-input" accept=".jpg,.jpeg,.png,.pdf" required style="display:none;" onchange="this.parentElement.querySelector('.file-drop-text').textContent = this.files[0] ? this.files[0].name : 'Klik untuk unggah file (JPG, PNG, PDF — maks. 2MB)'">
+                  <input type="file" name="dokumen_surat_pengantar_rt_rw" class="file-input" accept=".jpg,.jpeg,.png,.pdf" {{ $hasFile('dokumen_surat_pengantar_rt_rw') ? '' : 'required' }} style="display:none;" onchange="this.parentElement.querySelector('.file-drop-text').textContent = this.files[0] ? this.files[0].name : 'Klik untuk unggah file (JPG, PNG, PDF — maks. 2MB)'">
                     <div class="file-drop-icon">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                     </div>
-                    <div class="file-drop-text">Klik untuk unggah file (JPG, PNG, PDF — maks. 2MB)</div>
+                    <div class="file-drop-text">@if($hasFile('dokumen_surat_pengantar_rt_rw')) <span style="color:var(--blue);font-weight:600;">Sudah ada file sebelumnya. Klik untuk mengganti (opsional).</span> @else Klik untuk unggah file (JPG, PNG, PDF — maks. 2MB) @endif</div>
                 </label>
                 </div>
 
                 <div class="form-input-group form-col-full">
                   <label class="input-label">Fotokopi KTP Pemohon <span class="text-red">*</span></label>
                   <label class="file-drop-area">
-                  <input type="file" name="dokumen_fotokopi_ktp_pemohon" class="file-input" accept=".jpg,.jpeg,.png,.pdf" required style="display:none;" onchange="this.parentElement.querySelector('.file-drop-text').textContent = this.files[0] ? this.files[0].name : 'Klik untuk unggah file (JPG, PNG, PDF — maks. 2MB)'">
+                  <input type="file" name="dokumen_fotokopi_ktp_pemohon" class="file-input" accept=".jpg,.jpeg,.png,.pdf" {{ $hasFile('dokumen_fotokopi_ktp_pemohon') ? '' : 'required' }} style="display:none;" onchange="this.parentElement.querySelector('.file-drop-text').textContent = this.files[0] ? this.files[0].name : 'Klik untuk unggah file (JPG, PNG, PDF — maks. 2MB)'">
                     <div class="file-drop-icon">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                     </div>
-                    <div class="file-drop-text">Klik untuk unggah file (JPG, PNG, PDF — maks. 2MB)</div>
+                    <div class="file-drop-text">@if($hasFile('dokumen_fotokopi_ktp_pemohon')) <span style="color:var(--blue);font-weight:600;">Sudah ada file sebelumnya. Klik untuk mengganti (opsional).</span> @else Klik untuk unggah file (JPG, PNG, PDF — maks. 2MB) @endif</div>
                 </label>
                 </div>
 
                 <div class="form-input-group form-col-full">
                   <label class="input-label">Fotokopi Keluarga (KK) <span class="text-red">*</span></label>
                   <label class="file-drop-area">
-                  <input type="file" name="dokumen_fotokopi_keluarga_kk" class="file-input" accept=".jpg,.jpeg,.png,.pdf" required style="display:none;" onchange="this.parentElement.querySelector('.file-drop-text').textContent = this.files[0] ? this.files[0].name : 'Klik untuk unggah file (JPG, PNG, PDF — maks. 2MB)'">
+                  <input type="file" name="dokumen_fotokopi_keluarga_kk" class="file-input" accept=".jpg,.jpeg,.png,.pdf" {{ $hasFile('dokumen_fotokopi_keluarga_kk') ? '' : 'required' }} style="display:none;" onchange="this.parentElement.querySelector('.file-drop-text').textContent = this.files[0] ? this.files[0].name : 'Klik untuk unggah file (JPG, PNG, PDF — maks. 2MB)'">
                     <div class="file-drop-icon">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                     </div>
-                    <div class="file-drop-text">Klik untuk unggah file (JPG, PNG, PDF — maks. 2MB)</div>
+                    <div class="file-drop-text">@if($hasFile('dokumen_fotokopi_keluarga_kk')) <span style="color:var(--blue);font-weight:600;">Sudah ada file sebelumnya. Klik untuk mengganti (opsional).</span> @else Klik untuk unggah file (JPG, PNG, PDF — maks. 2MB) @endif</div>
                 </label>
                 </div>
 
                 <div class="form-input-group form-col-full">
                   <label class="input-label">Foto Tempat Usaha <span class="text-red">*</span></label>
                   <label class="file-drop-area">
-                  <input type="file" name="dokumen_foto_tempat_usaha" class="file-input" accept=".jpg,.jpeg,.png,.pdf" required style="display:none;" onchange="this.parentElement.querySelector('.file-drop-text').textContent = this.files[0] ? this.files[0].name : 'Klik untuk unggah file (JPG, PNG, PDF — maks. 2MB)'">
+                  <input type="file" name="dokumen_foto_tempat_usaha" class="file-input" accept=".jpg,.jpeg,.png,.pdf" {{ $hasFile('dokumen_foto_tempat_usaha') ? '' : 'required' }} style="display:none;" onchange="this.parentElement.querySelector('.file-drop-text').textContent = this.files[0] ? this.files[0].name : 'Klik untuk unggah file (JPG, PNG, PDF — maks. 2MB)'">
                     <div class="file-drop-icon">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                     </div>
-                    <div class="file-drop-text">Klik untuk unggah file (JPG, PNG, PDF — maks. 2MB)</div>
+                    <div class="file-drop-text">@if($hasFile('dokumen_foto_tempat_usaha')) <span style="color:var(--blue);font-weight:600;">Sudah ada file sebelumnya. Klik untuk mengganti (opsional).</span> @else Klik untuk unggah file (JPG, PNG, PDF — maks. 2MB) @endif</div>
                 </label>
                 </div>
 
@@ -1408,64 +1430,64 @@
                 
                 <div class="form-input-group form-col-full">
                   <label class="input-label">Nama Lengkap <span class="text-red">*</span></label>
-                  <input type="text" name="nama_lengkap" class="input-control" value="{{ Auth::user()->name }}" required>
+                  <input type="text" name="nama_lengkap" class="input-control" value="{{ $val('nama_lengkap', Auth::user()->name) }}" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">NIK <span class="text-red">*</span></label>
-                  <input type="text" name="nik" class="input-control" value="{{ Auth::user()->nik }}" required>
+                  <input type="text" name="nik" class="input-control" value="{{ $val('nik', Auth::user()->nik) }}" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">Jenis Kelamin <span class="text-red">*</span></label>
                   <select name="jenis_kelamin" class="input-control" required>
                   <option value="">-- Pilih --</option>
-                  <option value="l" {{ Auth::user()->jenis_kelamin == 'l' ? 'selected' : '' }}>Laki-laki</option>
-                  <option value="p" {{ Auth::user()->jenis_kelamin == 'p' ? 'selected' : '' }}>Perempuan</option>
+                  <option value="l" {{ $val('jenis_kelamin', Auth::user()->jenis_kelamin) == 'l' ? 'selected' : '' }}>Laki-laki</option>
+                  <option value="p" {{ $val('jenis_kelamin', Auth::user()->jenis_kelamin) == 'p' ? 'selected' : '' }}>Perempuan</option>
                 </select>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">Tempat Lahir <span class="text-red">*</span></label>
-                  <input type="text" name="tempat_lahir" class="input-control" value="{{ Auth::user()->tempat_lahir }}" required>
+                  <input type="text" name="tempat_lahir" class="input-control" value="{{ $val('tempat_lahir', Auth::user()->tempat_lahir) }}" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">Tanggal Lahir <span class="text-red">*</span></label>
-                  <input type="date" name="tanggal_lahir" class="input-control" value="{{ Auth::user()->tanggal_lahir ? \Carbon\Carbon::parse(Auth::user()->tanggal_lahir)->format('Y-m-d') : '' }}" required>
+                  <input type="date" name="tanggal_lahir" class="input-control" value="{{ $val('tanggal_lahir', Auth::user()->tanggal_lahir ? \Carbon\Carbon::parse(Auth::user()->tanggal_lahir)->format('Y-m-d') : '') }}" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">Kewarganegaraan <span class="text-red">*</span></label>
-                  <input type="text" name="kewarganegaraan" class="input-control" value="{{ Auth::user()->kewarganegaraan }}" required>
+                  <input type="text" name="kewarganegaraan" class="input-control" value="{{ $val('kewarganegaraan', Auth::user()->kewarganegaraan) }}" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">Agama <span class="text-red">*</span></label>
                   <select name="agama" class="input-control" required>
                   <option value="">-- Pilih --</option>
-                  <option value="islam" {{ Auth::user()->agama == 'islam' ? 'selected' : '' }}>Islam</option>
-                  <option value="kristen" {{ Auth::user()->agama == 'kristen' ? 'selected' : '' }}>Kristen</option>
-                  <option value="katolik" {{ Auth::user()->agama == 'katolik' ? 'selected' : '' }}>Katolik</option>
-                  <option value="hindu" {{ Auth::user()->agama == 'hindu' ? 'selected' : '' }}>Hindu</option>
-                  <option value="budha" {{ Auth::user()->agama == 'budha' ? 'selected' : '' }}>Budha</option>
-                  <option value="konghucu" {{ Auth::user()->agama == 'konghucu' ? 'selected' : '' }}>Konghucu</option>
+                  <option value="islam" {{ $val('agama', Auth::user()->agama) == 'islam' ? 'selected' : '' }}>Islam</option>
+                  <option value="kristen" {{ $val('agama', Auth::user()->agama) == 'kristen' ? 'selected' : '' }}>Kristen</option>
+                  <option value="katolik" {{ $val('agama', Auth::user()->agama) == 'katolik' ? 'selected' : '' }}>Katolik</option>
+                  <option value="hindu" {{ $val('agama', Auth::user()->agama) == 'hindu' ? 'selected' : '' }}>Hindu</option>
+                  <option value="budha" {{ $val('agama', Auth::user()->agama) == 'budha' ? 'selected' : '' }}>Budha</option>
+                  <option value="konghucu" {{ $val('agama', Auth::user()->agama) == 'konghucu' ? 'selected' : '' }}>Konghucu</option>
                 </select>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">Pekerjaan <span class="text-red">*</span></label>
-                  <input type="text" name="pekerjaan" class="input-control" value="{{ Auth::user()->pekerjaan }}" required>
+                  <input type="text" name="pekerjaan" class="input-control" value="{{ $val('pekerjaan', Auth::user()->pekerjaan) }}" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">Status Pernikahan <span class="text-red">*</span></label>
                   <select name="status_pernikahan" class="input-control" required>
                   <option value="">-- Pilih --</option>
-                  <option value="belum" {{ Auth::user()->status_pernikahan == 'belum' ? 'selected' : '' }}>Belum Kawin</option>
-                  <option value="kawin" {{ Auth::user()->status_pernikahan == 'kawin' ? 'selected' : '' }}>Kawin</option>
-                  <option value="cerai_hidup" {{ Auth::user()->status_pernikahan == 'cerai_hidup' ? 'selected' : '' }}>Cerai Hidup</option>
-                  <option value="cerai_mati" {{ Auth::user()->status_pernikahan == 'cerai_mati' ? 'selected' : '' }}>Cerai Mati</option>
+                  <option value="belum" {{ $val('status_pernikahan', Auth::user()->status_pernikahan) == 'belum' ? 'selected' : '' }}>Belum Kawin</option>
+                  <option value="kawin" {{ $val('status_pernikahan', Auth::user()->status_pernikahan) == 'kawin' ? 'selected' : '' }}>Kawin</option>
+                  <option value="cerai_hidup" {{ $val('status_pernikahan', Auth::user()->status_pernikahan) == 'cerai_hidup' ? 'selected' : '' }}>Cerai Hidup</option>
+                  <option value="cerai_mati" {{ $val('status_pernikahan', Auth::user()->status_pernikahan) == 'cerai_mati' ? 'selected' : '' }}>Cerai Mati</option>
                 </select>
                 </div>
 
@@ -1484,32 +1506,32 @@
                 
                 <div class="form-input-group form-col-full">
                   <label class="input-label">Alamat Lengkap <span class="text-red">*</span></label>
-                  <textarea name="alamat_lengkap" class="input-control" rows="2" required>{{ Auth::user()->alamat_lengkap }}</textarea>
+                  <textarea name="alamat_lengkap" class="input-control" rows="2" required>{{ $val('alamat_lengkap', Auth::user()->alamat_lengkap) }}</textarea>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">RT <span class="text-red">*</span></label>
-                  <input type="text" name="rt" class="input-control" value="{{ Auth::user()->rt }}" required>
+                  <input type="text" name="rt" class="input-control" value="{{ $val('rt', Auth::user()->rt) }}" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">RW <span class="text-red">*</span></label>
-                  <input type="text" name="rw" class="input-control" value="{{ Auth::user()->rw }}" required>
+                  <input type="text" name="rw" class="input-control" value="{{ $val('rw', Auth::user()->rw) }}" required>
                 </div>
 
                 <div class="form-input-group form-col-full">
                   <label class="input-label">Kelurahan <span class="text-red">*</span></label>
-                  <input type="text" name="kelurahan" class="input-control" value="{{ Auth::user()->kelurahan }}" required>
+                  <input type="text" name="kelurahan" class="input-control" value="{{ $val('kelurahan', Auth::user()->kelurahan) }}" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">Kecamatan <span class="text-red">*</span></label>
-                  <input type="text" name="kecamatan" class="input-control" value="{{ Auth::user()->kecamatan }}" required>
+                  <input type="text" name="kecamatan" class="input-control" value="{{ $val('kecamatan', Auth::user()->kecamatan) }}" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">Kota <span class="text-red">*</span></label>
-                  <input type="text" name="kota" class="input-control" value="{{ Auth::user()->kota }}" required>
+                  <input type="text" name="kota" class="input-control" value="{{ $val('kota', Auth::user()->kota) }}" required>
                 </div>
 
               </div>
@@ -1571,44 +1593,44 @@
                 <div class="form-input-group form-col-full">
                   <label class="input-label">Surat Pengantar RT/RW <span class="text-red">*</span></label>
                   <label class="file-drop-area">
-                  <input type="file" name="dokumen_surat_pengantar_rt_rw" class="file-input" accept=".jpg,.jpeg,.png,.pdf" required style="display:none;" onchange="this.parentElement.querySelector('.file-drop-text').textContent = this.files[0] ? this.files[0].name : 'Klik untuk unggah file (JPG, PNG, PDF — maks. 2MB)'">
+                  <input type="file" name="dokumen_surat_pengantar_rt_rw" class="file-input" accept=".jpg,.jpeg,.png,.pdf" {{ $hasFile('dokumen_surat_pengantar_rt_rw') ? '' : 'required' }} style="display:none;" onchange="this.parentElement.querySelector('.file-drop-text').textContent = this.files[0] ? this.files[0].name : 'Klik untuk unggah file (JPG, PNG, PDF — maks. 2MB)'">
                     <div class="file-drop-icon">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                     </div>
-                    <div class="file-drop-text">Klik untuk unggah file (JPG, PNG, PDF — maks. 2MB)</div>
+                    <div class="file-drop-text">@if($hasFile('dokumen_surat_pengantar_rt_rw')) <span style="color:var(--blue);font-weight:600;">Sudah ada file sebelumnya. Klik untuk mengganti (opsional).</span> @else Klik untuk unggah file (JPG, PNG, PDF — maks. 2MB) @endif</div>
                 </label>
                 </div>
 
                 <div class="form-input-group form-col-full">
                   <label class="input-label">Fotokopi KTP Pemohon <span class="text-red">*</span></label>
                   <label class="file-drop-area">
-                  <input type="file" name="dokumen_fotokopi_ktp_pemohon" class="file-input" accept=".jpg,.jpeg,.png,.pdf" required style="display:none;" onchange="this.parentElement.querySelector('.file-drop-text').textContent = this.files[0] ? this.files[0].name : 'Klik untuk unggah file (JPG, PNG, PDF — maks. 2MB)'">
+                  <input type="file" name="dokumen_fotokopi_ktp_pemohon" class="file-input" accept=".jpg,.jpeg,.png,.pdf" {{ $hasFile('dokumen_fotokopi_ktp_pemohon') ? '' : 'required' }} style="display:none;" onchange="this.parentElement.querySelector('.file-drop-text').textContent = this.files[0] ? this.files[0].name : 'Klik untuk unggah file (JPG, PNG, PDF — maks. 2MB)'">
                     <div class="file-drop-icon">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                     </div>
-                    <div class="file-drop-text">Klik untuk unggah file (JPG, PNG, PDF — maks. 2MB)</div>
+                    <div class="file-drop-text">@if($hasFile('dokumen_fotokopi_ktp_pemohon')) <span style="color:var(--blue);font-weight:600;">Sudah ada file sebelumnya. Klik untuk mengganti (opsional).</span> @else Klik untuk unggah file (JPG, PNG, PDF — maks. 2MB) @endif</div>
                 </label>
                 </div>
 
                 <div class="form-input-group form-col-full">
                   <label class="input-label">Fotokopi Keluarga (KK) <span class="text-red">*</span></label>
                   <label class="file-drop-area">
-                  <input type="file" name="dokumen_fotokopi_keluarga_kk" class="file-input" accept=".jpg,.jpeg,.png,.pdf" required style="display:none;" onchange="this.parentElement.querySelector('.file-drop-text').textContent = this.files[0] ? this.files[0].name : 'Klik untuk unggah file (JPG, PNG, PDF — maks. 2MB)'">
+                  <input type="file" name="dokumen_fotokopi_keluarga_kk" class="file-input" accept=".jpg,.jpeg,.png,.pdf" {{ $hasFile('dokumen_fotokopi_keluarga_kk') ? '' : 'required' }} style="display:none;" onchange="this.parentElement.querySelector('.file-drop-text').textContent = this.files[0] ? this.files[0].name : 'Klik untuk unggah file (JPG, PNG, PDF — maks. 2MB)'">
                     <div class="file-drop-icon">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                     </div>
-                    <div class="file-drop-text">Klik untuk unggah file (JPG, PNG, PDF — maks. 2MB)</div>
+                    <div class="file-drop-text">@if($hasFile('dokumen_fotokopi_keluarga_kk')) <span style="color:var(--blue);font-weight:600;">Sudah ada file sebelumnya. Klik untuk mengganti (opsional).</span> @else Klik untuk unggah file (JPG, PNG, PDF — maks. 2MB) @endif</div>
                 </label>
                 </div>
 
                 <div class="form-input-group form-col-full">
                   <label class="input-label">Surat Pernyataan Domisili <span class="text-red">*</span></label>
                   <label class="file-drop-area">
-                  <input type="file" name="dokumen_surat_pernyataan_domisili___pemohon" class="file-input" accept=".jpg,.jpeg,.png,.pdf" required style="display:none;" onchange="this.parentElement.querySelector('.file-drop-text').textContent = this.files[0] ? this.files[0].name : 'Klik untuk unggah file (JPG, PNG, PDF — maks. 2MB)'">
+                  <input type="file" name="dokumen_surat_pernyataan_domisili___pemohon" class="file-input" accept=".jpg,.jpeg,.png,.pdf" {{ $hasFile('dokumen_surat_pernyataan_domisili___pemohon') ? '' : 'required' }} style="display:none;" onchange="this.parentElement.querySelector('.file-drop-text').textContent = this.files[0] ? this.files[0].name : 'Klik untuk unggah file (JPG, PNG, PDF — maks. 2MB)'">
                     <div class="file-drop-icon">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                     </div>
-                    <div class="file-drop-text">Klik untuk unggah file (JPG, PNG, PDF — maks. 2MB)</div>
+                    <div class="file-drop-text">@if($hasFile('dokumen_surat_pernyataan_domisili___pemohon')) <span style="color:var(--blue);font-weight:600;">Sudah ada file sebelumnya. Klik untuk mengganti (opsional).</span> @else Klik untuk unggah file (JPG, PNG, PDF — maks. 2MB) @endif</div>
                 </label>
                 </div>
 

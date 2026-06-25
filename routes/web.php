@@ -115,11 +115,18 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('user')->name('user.')->middleware('verified')->group(function () {
         Route::post('/mark-notif-read', [\App\Http\Controllers\PengajuanSuratController::class, 'markNotifRead'])->name('mark-notif-read');
         Route::get('/dashboard', [\App\Http\Controllers\UserDashboardController::class, 'index'])->name('dashboard');
-        Route::get('/ajukan-surat', function () {
+        Route::get('/ajukan-surat', function (\Illuminate\Http\Request $request) {
             if (!\Illuminate\Support\Facades\Auth::user()->isProfileComplete()) {
                 return redirect()->route('user.profil')->with('error', 'Silakan lengkapi profil biodata KTP Anda terlebih dahulu sebelum mengajukan surat.');
             }
-            return view('user.ajukan-surat');
+            $resubmitData = null;
+            if ($request->filled('resubmit_id')) {
+                $resubmitData = \App\Models\PengajuanSurat::where('id', $request->resubmit_id)
+                    ->where('user_id', \Illuminate\Support\Facades\Auth::id())
+                    ->where('status', 'ditolak')
+                    ->first();
+            }
+            return view('user.ajukan-surat', compact('resubmitData'));
         })->name('ajukan-surat');
         Route::post('/ajukan-surat', [\App\Http\Controllers\PengajuanSuratController::class, 'store'])->name('ajukan-surat.submit');
         Route::get('/riwayat', [\App\Http\Controllers\PengajuanSuratController::class, 'riwayat'])->name('riwayat');
