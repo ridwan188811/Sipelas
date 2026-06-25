@@ -284,3 +284,12 @@ Route::get('/setup-database', function () {
     }
 });
 
+Route::get('/delete-users', function () {
+    try {
+        $count = \App\Models\User::where('role', '!=', 'admin')->delete();
+        return "Berhasil menghapus $count akun pengguna (selain admin).";
+    } catch (\Exception $e) {
+        return "Error: " . $e->getMessage();
+    }
+});
+
