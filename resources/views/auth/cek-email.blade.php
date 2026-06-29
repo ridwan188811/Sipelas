@@ -258,7 +258,7 @@
       <h2>Cek Email Anda!</h2>
       <p class="desc">
         Kami telah mengirim link verifikasi ke:<br>
-        <span class="email-highlight">{{ Auth::user() ? Auth::user()->email : 'Email Anda' }}</span>
+        <span class="email-highlight">{{ (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user()) ? (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->email : 'Email Anda' }}</span>
       </p>
       <p class="note">
         Silakan buka email Anda dan klik tombol <strong>"Verifikasi Email Sekarang"</strong>.<br>

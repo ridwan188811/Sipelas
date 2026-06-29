@@ -10,8 +10,8 @@ class PengajuanSuratController extends Controller
 {
     public function markNotifRead()
     {
-        $user = Auth::user();
-        PengajuanSurat::where('user_id', $user->id)
+        $wargaId = Auth::guard('warga')->id();
+        PengajuanSurat::where('warga_id', $wargaId)
             ->whereIn('status', ['disetujui', 'ditolak'])
             ->where('is_read_by_user', false)
             ->update(['is_read_by_user' => true]);
@@ -20,25 +20,17 @@ class PengajuanSuratController extends Controller
 
     public function store(Request $request)
     {
-        $pengajuanLama = null;
-        if ($request->filled('resubmit_id')) {
-            $pengajuanLama = PengajuanSurat::where('id', $request->resubmit_id)
-                ->where('user_id', Auth::id())
-                ->first();
-        }
-
         $rules = [
-            'jenis_surat' => 'required|in:sktm,sku,domisili',
+            'jenis_surat' => 'required|in:sktm,sktm-sekolah,sku,domisili',
         ];
 
-        $getFileRule = function($fieldName) use ($pengajuanLama) {
-            if ($pengajuanLama && isset($pengajuanLama->dokumen_pendukung[$fieldName])) {
-                return 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
-            }
-            return 'required|file|mimes:jpg,jpeg,png,pdf|max:2048';
+        $getFileRule = function($fieldName) use ($request) {
+            // Note: Update logic requires deeper inspection for old documents.
+            // For now we enforce required for new submissions, nullable if updating
+            return $request->filled('resubmit_id') ? 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048' : 'required|file|mimes:jpg,jpeg,png,pdf|max:2048';
         };
 
-        if ($request->jenis_surat === 'sktm') {
+        if ($request->jenis_surat === 'sktm' || $request->jenis_surat === 'sktm-sekolah') {
             $rules['dokumen_surat_pengantar_rt_rw'] = $getFileRule('dokumen_surat_pengantar_rt_rw');
             $rules['dokumen_fotokopi_ktp_pemohon'] = $getFileRule('dokumen_fotokopi_ktp_pemohon');
             $rules['dokumen_fotokopi_keluarga_kk'] = $getFileRule('dokumen_fotokopi_keluarga_kk');
@@ -55,57 +47,75 @@ class PengajuanSuratController extends Controller
         }
 
         $request->validate($rules, [
-            'required' => 'File/Dokumen pendukung wajib diunggah (periksa kembali bagian dokumen).',
+            'required' => 'Data / Dokumen pendukung wajib diunggah.',
             'mimes' => 'Format file harus berupa JPG, PNG, atau PDF.',
             'max' => 'Ukuran file maksimal 2MB.'
         ]);
 
-        $user = Auth::user();
+        $wargaId = Auth::guard('warga')->id();
         $jenis_surat = $request->jenis_surat;
         
-        // Ambil semua data input kecuali file dan metadata form (csrf, jenis_surat, resubmit_id)
-        $inputData = $request->except(['_token', 'jenis_surat', 'dokumen', 'resubmit_id']);
-        
         $dokumenPendukung = [];
-
-        // Handle file uploads dengan aman
         foreach ($request->allFiles() as $key => $file) {
-            // Gunakan hashName() bawaan Laravel agar nama file aman dan tidak bisa dimanipulasi
             $path = $file->store('dokumen_pengajuan', 'public');
             $dokumenPendukung[$key] = $path;
         }
 
+        // Jika Resubmit, hapus pengajuan lama lalu buat baru agar detail relasi terganti dengan rapi
         if ($request->filled('resubmit_id')) {
-            $pengajuan = PengajuanSurat::where('id', $request->resubmit_id)
-                ->where('user_id', $user->id)
+            $pengajuanLama = PengajuanSurat::where('id', $request->resubmit_id)
+                ->where('warga_id', $wargaId)
                 ->where('status', 'ditolak')
                 ->first();
 
-            if ($pengajuan) {
-                $pengajuan->update([
-                    'jenis_surat' => $jenis_surat,
-                    'status' => 'menunggu',
-                    'data_isian' => $inputData,
-                    'dokumen_pendukung' => count($dokumenPendukung) > 0 ? array_merge($pengajuan->dokumen_pendukung ?? [], $dokumenPendukung) : $pengajuan->dokumen_pendukung,
-                    'catatan_admin' => null,
-                ]);
-
-                if ($request->ajax()) {
-                    session()->flash('success', 'Pengajuan ulang berhasil dikirim!');
-                    return response()->json(['redirect' => route('user.riwayat')]);
-                }
-                return redirect()->route('user.riwayat')->with('success', 'Pengajuan ulang berhasil dikirim!');
+            if ($pengajuanLama) {
+                // Untuk resubmit, kita hapus dulu lama (detail table berelasi cascade) lalu insert ulang
+                // Atau kita update jika mau dipertahankan
+                // Untuk amannya, kita setuju menggunakan data baru
+                $pengajuanLama->delete();
             }
         }
 
         // Simpan ke database
         $pengajuanBaru = PengajuanSurat::create([
-            'user_id' => $user->id,
+            'warga_id' => $wargaId,
             'jenis_surat' => $jenis_surat,
             'status' => 'menunggu',
-            'data_isian' => $inputData,
-            'dokumen_pendukung' => count($dokumenPendukung) > 0 ? $dokumenPendukung : null,
         ]);
+
+        if ($jenis_surat === 'sku') {
+            $pengajuanBaru->detailSku()->create([
+                'nama_usaha' => $request->nama_usaha,
+                'jenis_usaha' => $request->jenis_usaha,
+                'alamat_usaha' => $request->alamat_usaha,
+                'lama_usaha' => $request->lama_usaha,
+                'dokumen_surat_pengantar_rt_rw' => $dokumenPendukung['dokumen_surat_pengantar_rt_rw'] ?? null,
+                'dokumen_fotokopi_ktp_pemohon' => $dokumenPendukung['dokumen_fotokopi_ktp_pemohon'] ?? null,
+                'dokumen_fotokopi_keluarga_kk' => $dokumenPendukung['dokumen_fotokopi_keluarga_kk'] ?? null,
+                'dokumen_foto_tempat_usaha' => $dokumenPendukung['dokumen_foto_tempat_usaha'] ?? null,
+            ]);
+        } elseif ($jenis_surat === 'sktm' || $jenis_surat === 'sktm-sekolah') {
+            $pengajuanBaru->detailSktm()->create([
+                'keperluan' => $request->keperluan,
+                'nama_anak' => $request->nama_anak,
+                'tempat_tanggal_lahir_anak' => $request->tempat_tanggal_lahir_anak,
+                'sekolah_tujuan' => $request->sekolah_tujuan,
+                'dokumen_surat_pengantar_rt_rw' => $dokumenPendukung['dokumen_surat_pengantar_rt_rw'] ?? null,
+                'dokumen_fotokopi_ktp_pemohon' => $dokumenPendukung['dokumen_fotokopi_ktp_pemohon'] ?? null,
+                'dokumen_fotokopi_keluarga_kk' => $dokumenPendukung['dokumen_fotokopi_keluarga_kk'] ?? null,
+            ]);
+        } elseif ($jenis_surat === 'domisili') {
+            $pengajuanBaru->detailDomisili()->create([
+                'kewarganegaraan' => $request->kewarganegaraan,
+                'agama' => $request->agama,
+                'pekerjaan' => $request->pekerjaan,
+                'status_pernikahan' => $request->status_pernikahan,
+                'dokumen_surat_pengantar_rt_rw' => $dokumenPendukung['dokumen_surat_pengantar_rt_rw'] ?? null,
+                'dokumen_fotokopi_ktp_pemohon' => $dokumenPendukung['dokumen_fotokopi_ktp_pemohon'] ?? null,
+                'dokumen_fotokopi_keluarga_kk' => $dokumenPendukung['dokumen_fotokopi_keluarga_kk'] ?? null,
+                'dokumen_surat_pernyataan_domisili___pemohon' => $dokumenPendukung['dokumen_surat_pernyataan_domisili___pemohon'] ?? null,
+            ]);
+        }
 
         if ($request->ajax()) {
             session()->flash('success', 'Pengajuan surat berhasil dikirim!');
@@ -116,7 +126,8 @@ class PengajuanSuratController extends Controller
 
     public function riwayat(Request $request)
     {
-        $query = PengajuanSurat::where('user_id', Auth::id());
+        $wargaId = Auth::guard('warga')->id();
+        $query = PengajuanSurat::where('warga_id', $wargaId);
 
         if ($request->filled('jenis_surat')) {
             $query->where('jenis_surat', $request->jenis_surat);
@@ -133,10 +144,10 @@ class PengajuanSuratController extends Controller
 
     public function show($id)
     {
-        $pengajuan = PengajuanSurat::findOrFail($id);
+        $pengajuan = PengajuanSurat::with(['detailSku', 'detailSktm', 'detailDomisili'])->findOrFail($id);
+        $wargaId = Auth::guard('warga')->id();
         
-        // Jika warga membuka detail suratnya sendiri dan statusnya disetujui/ditolak
-        if (Auth::user()->role === 'warga' && $pengajuan->user_id === Auth::id()) {
+        if ($pengajuan->warga_id === $wargaId) {
             if (!$pengajuan->is_read_by_user && in_array($pengajuan->status, ['disetujui', 'ditolak'])) {
                 $pengajuan->is_read_by_user = true;
                 $pengajuan->save();
@@ -148,17 +159,24 @@ class PengajuanSuratController extends Controller
 
     public function destroy($id)
     {
-        $pengajuan = PengajuanSurat::findOrFail($id);
+        $pengajuan = PengajuanSurat::with(['detailSku', 'detailSktm', 'detailDomisili'])->findOrFail($id);
+        $wargaId = Auth::guard('warga')->id();
 
-        // Hanya warga pemilik pengajuan yang bisa menghapus, dan hanya jika statusnya ditolak (atau mungkin menunggu)
-        // User requested: "saat ditolak aktifkan"
-        if (Auth::user()->role === 'warga' && $pengajuan->user_id === Auth::id() && $pengajuan->status === 'ditolak') {
-            // Hapus file dokumen pendukung jika ada
-            if ($pengajuan->dokumen_pendukung) {
-                foreach ($pengajuan->dokumen_pendukung as $file) {
-                    if (\Illuminate\Support\Facades\Storage::disk('public')->exists($file)) {
-                        \Illuminate\Support\Facades\Storage::disk('public')->delete($file);
-                    }
+        if ($pengajuan->warga_id === $wargaId && $pengajuan->status === 'ditolak') {
+            // Delete associated files
+            // Need to collect from details
+            $files = [];
+            if ($pengajuan->detailSku) {
+                $files = [$pengajuan->detailSku->dokumen_surat_pengantar_rt_rw, $pengajuan->detailSku->dokumen_fotokopi_ktp_pemohon, $pengajuan->detailSku->dokumen_fotokopi_keluarga_kk, $pengajuan->detailSku->dokumen_foto_tempat_usaha];
+            } elseif ($pengajuan->detailSktm) {
+                $files = [$pengajuan->detailSktm->dokumen_surat_pengantar_rt_rw, $pengajuan->detailSktm->dokumen_fotokopi_ktp_pemohon, $pengajuan->detailSktm->dokumen_fotokopi_keluarga_kk];
+            } elseif ($pengajuan->detailDomisili) {
+                $files = [$pengajuan->detailDomisili->dokumen_surat_pengantar_rt_rw, $pengajuan->detailDomisili->dokumen_fotokopi_ktp_pemohon, $pengajuan->detailDomisili->dokumen_fotokopi_keluarga_kk, $pengajuan->detailDomisili->dokumen_surat_pernyataan_domisili___pemohon];
+            }
+
+            foreach ($files as $file) {
+                if ($file && \Illuminate\Support\Facades\Storage::disk('public')->exists($file)) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($file);
                 }
             }
             $pengajuan->delete();

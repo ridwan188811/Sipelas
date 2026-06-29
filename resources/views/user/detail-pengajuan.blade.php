@@ -229,7 +229,7 @@
         <div style="padding:20px;text-align:center;font-size:.85rem;color:#64748b;">Silakan buka halaman notifikasi</div>
       </div>
     </div>
-    <a href="{{ route('user.profil') }}" class="user-avatar">{{ strtoupper(substr(Auth::user()->name ?? Auth::user()->email, 0, 1)) }}</a>
+    <a href="{{ route('user.profil') }}" class="user-avatar">{{ strtoupper(substr((Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->name ?? (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->email, 0, 1)) }}</a>
   </div>
 </header>
 

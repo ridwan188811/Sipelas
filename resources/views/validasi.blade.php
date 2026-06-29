@@ -163,7 +163,7 @@
               'pindah' => 'Surat Keterangan Pindah'
           ];
           $jenis = $jenisSuratMap[$pengajuan->jenis_surat] ?? ucwords(str_replace('-', ' ', $pengajuan->jenis_surat));
-          $pemohon = strtoupper($pengajuan->user->name ?? explode('@', $pengajuan->user->email)[0]);
+          $pemohon = strtoupper($pengajuan->warga->name ?? explode('@', $pengajuan->warga->email)[0]);
         @endphp
 
         <div class="data-row">

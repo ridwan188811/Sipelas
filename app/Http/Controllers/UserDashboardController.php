@@ -10,23 +10,20 @@ class UserDashboardController extends Controller
 {
     public function index()
     {
-        $user = Auth::user();
+        $warga = Auth::guard('warga')->user();
         
-        // Menentukan nama dari email jika field name masih kosong
-        $displayName = $user->name;
+        $displayName = $warga->name;
         if (!$displayName) {
-            $displayName = explode('@', $user->email)[0];
+            $displayName = explode('@', $warga->email)[0];
             $displayName = ucwords(str_replace(['.', '_', '-'], ' ', $displayName));
         }
 
-        // Statistik surat
-        $totalPengajuan = PengajuanSurat::where('user_id', $user->id)->count();
-        $menunggu = PengajuanSurat::where('user_id', $user->id)->where('status', 'menunggu')->count();
-        $disetujui = PengajuanSurat::where('user_id', $user->id)->where('status', 'disetujui')->count();
-        $ditolak = PengajuanSurat::where('user_id', $user->id)->where('status', 'ditolak')->count();
+        $totalPengajuan = PengajuanSurat::where('warga_id', $warga->id)->count();
+        $menunggu = PengajuanSurat::where('warga_id', $warga->id)->where('status', 'menunggu')->count();
+        $disetujui = PengajuanSurat::where('warga_id', $warga->id)->where('status', 'disetujui')->count();
+        $ditolak = PengajuanSurat::where('warga_id', $warga->id)->where('status', 'ditolak')->count();
 
-        // Mengambil riwayat terbaru, maksimal 5 data
-        $recentPengajuans = PengajuanSurat::where('user_id', $user->id)
+        $recentPengajuans = PengajuanSurat::where('warga_id', $warga->id)
             ->orderBy('created_at', 'desc')
             ->take(5)
             ->get();

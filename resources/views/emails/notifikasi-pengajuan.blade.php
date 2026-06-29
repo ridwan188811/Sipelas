@@ -48,14 +48,14 @@
 
     <div class="container">
         <div class="header">
-            <img src="{{ asset('images/logo_tasikmalaya.png') }}" alt="Logo Tasikmalaya">
+            <img src="{{ $message->embed(public_path('images/logo_tasikmalaya.png')) }}" alt="Logo" style="height: 60px; margin-bottom: 15px; display: block;">
             <h1>Sistem Informasi Pelayanan Masyarakat</h1>
             <p>Kelurahan Sambongpari, Kota Tasikmalaya</p>
         </div>
         
         <div class="content">
             <div class="greeting">
-                Halo, {{ $pengajuan->user->name ?? explode('@', $pengajuan->user->email)[0] }}!
+                Halo, {{ $pengajuan->warga->name ?? explode('@', $pengajuan->warga->email)[0] }}!
             </div>
 
             <div class="message-box {{ $jenisNotif }}">

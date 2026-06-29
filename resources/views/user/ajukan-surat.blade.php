@@ -762,13 +762,13 @@
         <div style="max-height: 350px; overflow-y: auto;">
           @forelse($globalNotifList as $notif)
             @php
-              $route = Auth::user()->role == 'admin' ? route('admin.detail-pengajuan', $notif->id) : route('user.detail-pengajuan', $notif->id);
+              $route = (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->role == 'admin' ? route('admin.detail-pengajuan', $notif->id) : route('user.detail-pengajuan', $notif->id);
               $jenis = ['sku'=>'Surat Keterangan Usaha','sktm'=>'Surat Keterangan Tidak Mampu','sktm-sekolah'=>'Surat Keterangan Tidak Mampu (Sekolah)','domisili'=>'Surat Keterangan Domisili','belum-menikah'=>'Surat Keterangan Belum Menikah','kelahiran'=>'Surat Keterangan Kelahiran','kematian'=>'Surat Keterangan Kematian','pengantar-nikah'=>'Surat Pengantar Nikah','pindah'=>'Surat Keterangan Pindah'][$notif->jenis_surat] ?? ucwords(str_replace('-', ' ', $notif->jenis_surat));
             @endphp
             <a href="{{ $route }}" style="display: block; padding: 12px 16px; border-bottom: 1px solid #f1f5f9; text-decoration: none; transition: background .15s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
-              @if(Auth::user()->role == 'admin')
+              @if((Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->role == 'admin')
                 <div style="font-size: 0.85rem; color: #1e293b; font-weight: 600; margin-bottom: 4px;">Pengajuan Baru: {{ $jenis }}</div>
-                <div style="font-size: 0.75rem; color: #64748b;">Dari: {{ $notif->user->name ?? explode('@', $notif->user->email)[0] }}</div>
+                <div style="font-size: 0.75rem; color: #64748b;">Dari: {{ $notif->warga->name ?? explode('@', $notif->warga->email)[0] }}</div>
               @else
                 <div style="font-size: 0.85rem; color: #1e293b; font-weight: 600; margin-bottom: 4px;">Surat {{ $jenis }} {{ ucfirst($notif->status) }}</div>
                 <div style="font-size: 0.75rem; color: #64748b;">Pengajuan surat Anda telah {{ $notif->status }} oleh kelurahan.</div>
@@ -781,7 +781,7 @@
         </div>
       </div>
     </div>
-    <a href="{{ route('user.profil') }}" class="user-avatar" title="{{ Auth::user()->name ?? Auth::user()->email }}" style="text-decoration: none;">{{ strtoupper(substr(Auth::user()->name ?? Auth::user()->email, 0, 1)) }}</a>
+    <a href="{{ route('user.profil') }}" class="user-avatar" title="{{ (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->name ?? (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->email }}" style="text-decoration: none;">{{ strtoupper(substr((Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->name ?? (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->email, 0, 1)) }}</a>
   </div>
   <script>
     document.addEventListener('click', function(e) {
@@ -1147,95 +1147,95 @@
                 
                 <div class="form-input-group form-col-full">
                   <label class="input-label">Nama Lengkap <span class="text-red">*</span></label>
-                  <input type="text" name="nama_lengkap" class="input-control" value="{{ $val('nama_lengkap', Auth::user()->name) }}" required>
+                  <input type="text" name="nama_lengkap" class="input-control" value="{{ $val('nama_lengkap', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->name) }}" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">NIK <span class="text-red">*</span></label>
-                  <input type="text" name="nik" class="input-control" value="{{ $val('nik', Auth::user()->nik) }}" required>
+                  <input type="text" name="nik" class="input-control" value="{{ $val('nik', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->nik) }}" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">Jenis Kelamin <span class="text-red">*</span></label>
                   <select name="jenis_kelamin" class="input-control" required>
                   <option value="">-- Pilih --</option>
-                  <option value="l" {{ $val('jenis_kelamin', Auth::user()->jenis_kelamin) == 'l' ? 'selected' : '' }}>Laki-laki</option>
-                  <option value="p" {{ $val('jenis_kelamin', Auth::user()->jenis_kelamin) == 'p' ? 'selected' : '' }}>Perempuan</option>
+                  <option value="l" {{ $val('jenis_kelamin', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->jenis_kelamin) == 'l' ? 'selected' : '' }}>Laki-laki</option>
+                  <option value="p" {{ $val('jenis_kelamin', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->jenis_kelamin) == 'p' ? 'selected' : '' }}>Perempuan</option>
                 </select>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">Tempat Lahir <span class="text-red">*</span></label>
-                  <input type="text" name="tempat_lahir" class="input-control" value="{{ $val('tempat_lahir', Auth::user()->tempat_lahir) }}" required>
+                  <input type="text" name="tempat_lahir" class="input-control" value="{{ $val('tempat_lahir', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->tempat_lahir) }}" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">Tanggal Lahir <span class="text-red">*</span></label>
-                  <input type="date" name="tanggal_lahir" class="input-control" value="{{ $val('tanggal_lahir', Auth::user()->tanggal_lahir ? \Carbon\Carbon::parse(Auth::user()->tanggal_lahir)->format('Y-m-d') : '') }}" required>
+                  <input type="date" name="tanggal_lahir" class="input-control" value="{{ $val('tanggal_lahir', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->tanggal_lahir ? \Carbon\Carbon::parse((Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->tanggal_lahir)->format('Y-m-d') : '') }}" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">Kewarganegaraan <span class="text-red">*</span></label>
-                  <input type="text" name="kewarganegaraan" class="input-control" value="{{ $val('kewarganegaraan', Auth::user()->kewarganegaraan) }}" required>
+                  <input type="text" name="kewarganegaraan" class="input-control" value="{{ $val('kewarganegaraan', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->kewarganegaraan) }}" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">Agama <span class="text-red">*</span></label>
                   <select name="agama" class="input-control" required>
                   <option value="">-- Pilih --</option>
-                  <option value="islam" {{ $val('agama', Auth::user()->agama) == 'islam' ? 'selected' : '' }}>Islam</option>
-                  <option value="kristen" {{ $val('agama', Auth::user()->agama) == 'kristen' ? 'selected' : '' }}>Kristen</option>
-                  <option value="katolik" {{ $val('agama', Auth::user()->agama) == 'katolik' ? 'selected' : '' }}>Katolik</option>
-                  <option value="hindu" {{ $val('agama', Auth::user()->agama) == 'hindu' ? 'selected' : '' }}>Hindu</option>
-                  <option value="budha" {{ $val('agama', Auth::user()->agama) == 'budha' ? 'selected' : '' }}>Budha</option>
-                  <option value="konghucu" {{ $val('agama', Auth::user()->agama) == 'konghucu' ? 'selected' : '' }}>Konghucu</option>
+                  <option value="islam" {{ $val('agama', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->agama) == 'islam' ? 'selected' : '' }}>Islam</option>
+                  <option value="kristen" {{ $val('agama', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->agama) == 'kristen' ? 'selected' : '' }}>Kristen</option>
+                  <option value="katolik" {{ $val('agama', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->agama) == 'katolik' ? 'selected' : '' }}>Katolik</option>
+                  <option value="hindu" {{ $val('agama', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->agama) == 'hindu' ? 'selected' : '' }}>Hindu</option>
+                  <option value="budha" {{ $val('agama', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->agama) == 'budha' ? 'selected' : '' }}>Budha</option>
+                  <option value="konghucu" {{ $val('agama', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->agama) == 'konghucu' ? 'selected' : '' }}>Konghucu</option>
                 </select>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">Pekerjaan <span class="text-red">*</span></label>
-                  <input type="text" name="pekerjaan" class="input-control" value="{{ $val('pekerjaan', Auth::user()->pekerjaan) }}" required>
+                  <input type="text" name="pekerjaan" class="input-control" value="{{ $val('pekerjaan', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->pekerjaan) }}" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">Status Pernikahan <span class="text-red">*</span></label>
                   <select name="status_pernikahan" class="input-control" required>
                   <option value="">-- Pilih --</option>
-                  <option value="belum" {{ $val('status_pernikahan', Auth::user()->status_pernikahan) == 'belum' ? 'selected' : '' }}>Belum Kawin</option>
-                  <option value="kawin" {{ $val('status_pernikahan', Auth::user()->status_pernikahan) == 'kawin' ? 'selected' : '' }}>Kawin</option>
-                  <option value="cerai_hidup" {{ $val('status_pernikahan', Auth::user()->status_pernikahan) == 'cerai_hidup' ? 'selected' : '' }}>Cerai Hidup</option>
-                  <option value="cerai_mati" {{ $val('status_pernikahan', Auth::user()->status_pernikahan) == 'cerai_mati' ? 'selected' : '' }}>Cerai Mati</option>
+                  <option value="belum" {{ $val('status_pernikahan', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->status_pernikahan) == 'belum' ? 'selected' : '' }}>Belum Kawin</option>
+                  <option value="kawin" {{ $val('status_pernikahan', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->status_pernikahan) == 'kawin' ? 'selected' : '' }}>Kawin</option>
+                  <option value="cerai_hidup" {{ $val('status_pernikahan', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->status_pernikahan) == 'cerai_hidup' ? 'selected' : '' }}>Cerai Hidup</option>
+                  <option value="cerai_mati" {{ $val('status_pernikahan', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->status_pernikahan) == 'cerai_mati' ? 'selected' : '' }}>Cerai Mati</option>
                 </select>
                 </div>
 
                 <div class="form-input-group form-col-full">
                   <label class="input-label">Alamat Lengkap <span class="text-red">*</span></label>
-                  <textarea name="alamat_lengkap" class="input-control" rows="2" required>{{ $val('alamat_lengkap', Auth::user()->alamat_lengkap) }}</textarea>
+                  <textarea name="alamat_lengkap" class="input-control" rows="2" required>{{ $val('alamat_lengkap', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->alamat_lengkap) }}</textarea>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">RT <span class="text-red">*</span></label>
-                  <input type="text" name="rt" class="input-control" value="{{ $val('rt', Auth::user()->rt) }}" required>
+                  <input type="text" name="rt" class="input-control" value="{{ $val('rt', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->rt) }}" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">RW <span class="text-red">*</span></label>
-                  <input type="text" name="rw" class="input-control" value="{{ $val('rw', Auth::user()->rw) }}" required>
+                  <input type="text" name="rw" class="input-control" value="{{ $val('rw', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->rw) }}" required>
                 </div>
 
                 <div class="form-input-group form-col-full">
                   <label class="input-label">Kelurahan <span class="text-red">*</span></label>
-                  <input type="text" name="kelurahan" class="input-control" value="{{ $val('kelurahan', Auth::user()->kelurahan) }}" required>
+                  <input type="text" name="kelurahan" class="input-control" value="{{ $val('kelurahan', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->kelurahan) }}" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">Kecamatan <span class="text-red">*</span></label>
-                  <input type="text" name="kecamatan" class="input-control" value="{{ $val('kecamatan', Auth::user()->kecamatan) }}" required>
+                  <input type="text" name="kecamatan" class="input-control" value="{{ $val('kecamatan', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->kecamatan) }}" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">Kota <span class="text-red">*</span></label>
-                  <input type="text" name="kota" class="input-control" value="{{ $val('kota', Auth::user()->kota) }}" required>
+                  <input type="text" name="kota" class="input-control" value="{{ $val('kota', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->kota) }}" required>
                 </div>
 
               </div>
@@ -1430,64 +1430,64 @@
                 
                 <div class="form-input-group form-col-full">
                   <label class="input-label">Nama Lengkap <span class="text-red">*</span></label>
-                  <input type="text" name="nama_lengkap" class="input-control" value="{{ $val('nama_lengkap', Auth::user()->name) }}" required>
+                  <input type="text" name="nama_lengkap" class="input-control" value="{{ $val('nama_lengkap', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->name) }}" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">NIK <span class="text-red">*</span></label>
-                  <input type="text" name="nik" class="input-control" value="{{ $val('nik', Auth::user()->nik) }}" required>
+                  <input type="text" name="nik" class="input-control" value="{{ $val('nik', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->nik) }}" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">Jenis Kelamin <span class="text-red">*</span></label>
                   <select name="jenis_kelamin" class="input-control" required>
                   <option value="">-- Pilih --</option>
-                  <option value="l" {{ $val('jenis_kelamin', Auth::user()->jenis_kelamin) == 'l' ? 'selected' : '' }}>Laki-laki</option>
-                  <option value="p" {{ $val('jenis_kelamin', Auth::user()->jenis_kelamin) == 'p' ? 'selected' : '' }}>Perempuan</option>
+                  <option value="l" {{ $val('jenis_kelamin', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->jenis_kelamin) == 'l' ? 'selected' : '' }}>Laki-laki</option>
+                  <option value="p" {{ $val('jenis_kelamin', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->jenis_kelamin) == 'p' ? 'selected' : '' }}>Perempuan</option>
                 </select>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">Tempat Lahir <span class="text-red">*</span></label>
-                  <input type="text" name="tempat_lahir" class="input-control" value="{{ $val('tempat_lahir', Auth::user()->tempat_lahir) }}" required>
+                  <input type="text" name="tempat_lahir" class="input-control" value="{{ $val('tempat_lahir', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->tempat_lahir) }}" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">Tanggal Lahir <span class="text-red">*</span></label>
-                  <input type="date" name="tanggal_lahir" class="input-control" value="{{ $val('tanggal_lahir', Auth::user()->tanggal_lahir ? \Carbon\Carbon::parse(Auth::user()->tanggal_lahir)->format('Y-m-d') : '') }}" required>
+                  <input type="date" name="tanggal_lahir" class="input-control" value="{{ $val('tanggal_lahir', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->tanggal_lahir ? \Carbon\Carbon::parse((Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->tanggal_lahir)->format('Y-m-d') : '') }}" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">Kewarganegaraan <span class="text-red">*</span></label>
-                  <input type="text" name="kewarganegaraan" class="input-control" value="{{ $val('kewarganegaraan', Auth::user()->kewarganegaraan) }}" required>
+                  <input type="text" name="kewarganegaraan" class="input-control" value="{{ $val('kewarganegaraan', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->kewarganegaraan) }}" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">Agama <span class="text-red">*</span></label>
                   <select name="agama" class="input-control" required>
                   <option value="">-- Pilih --</option>
-                  <option value="islam" {{ $val('agama', Auth::user()->agama) == 'islam' ? 'selected' : '' }}>Islam</option>
-                  <option value="kristen" {{ $val('agama', Auth::user()->agama) == 'kristen' ? 'selected' : '' }}>Kristen</option>
-                  <option value="katolik" {{ $val('agama', Auth::user()->agama) == 'katolik' ? 'selected' : '' }}>Katolik</option>
-                  <option value="hindu" {{ $val('agama', Auth::user()->agama) == 'hindu' ? 'selected' : '' }}>Hindu</option>
-                  <option value="budha" {{ $val('agama', Auth::user()->agama) == 'budha' ? 'selected' : '' }}>Budha</option>
-                  <option value="konghucu" {{ $val('agama', Auth::user()->agama) == 'konghucu' ? 'selected' : '' }}>Konghucu</option>
+                  <option value="islam" {{ $val('agama', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->agama) == 'islam' ? 'selected' : '' }}>Islam</option>
+                  <option value="kristen" {{ $val('agama', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->agama) == 'kristen' ? 'selected' : '' }}>Kristen</option>
+                  <option value="katolik" {{ $val('agama', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->agama) == 'katolik' ? 'selected' : '' }}>Katolik</option>
+                  <option value="hindu" {{ $val('agama', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->agama) == 'hindu' ? 'selected' : '' }}>Hindu</option>
+                  <option value="budha" {{ $val('agama', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->agama) == 'budha' ? 'selected' : '' }}>Budha</option>
+                  <option value="konghucu" {{ $val('agama', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->agama) == 'konghucu' ? 'selected' : '' }}>Konghucu</option>
                 </select>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">Pekerjaan <span class="text-red">*</span></label>
-                  <input type="text" name="pekerjaan" class="input-control" value="{{ $val('pekerjaan', Auth::user()->pekerjaan) }}" required>
+                  <input type="text" name="pekerjaan" class="input-control" value="{{ $val('pekerjaan', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->pekerjaan) }}" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">Status Pernikahan <span class="text-red">*</span></label>
                   <select name="status_pernikahan" class="input-control" required>
                   <option value="">-- Pilih --</option>
-                  <option value="belum" {{ $val('status_pernikahan', Auth::user()->status_pernikahan) == 'belum' ? 'selected' : '' }}>Belum Kawin</option>
-                  <option value="kawin" {{ $val('status_pernikahan', Auth::user()->status_pernikahan) == 'kawin' ? 'selected' : '' }}>Kawin</option>
-                  <option value="cerai_hidup" {{ $val('status_pernikahan', Auth::user()->status_pernikahan) == 'cerai_hidup' ? 'selected' : '' }}>Cerai Hidup</option>
-                  <option value="cerai_mati" {{ $val('status_pernikahan', Auth::user()->status_pernikahan) == 'cerai_mati' ? 'selected' : '' }}>Cerai Mati</option>
+                  <option value="belum" {{ $val('status_pernikahan', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->status_pernikahan) == 'belum' ? 'selected' : '' }}>Belum Kawin</option>
+                  <option value="kawin" {{ $val('status_pernikahan', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->status_pernikahan) == 'kawin' ? 'selected' : '' }}>Kawin</option>
+                  <option value="cerai_hidup" {{ $val('status_pernikahan', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->status_pernikahan) == 'cerai_hidup' ? 'selected' : '' }}>Cerai Hidup</option>
+                  <option value="cerai_mati" {{ $val('status_pernikahan', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->status_pernikahan) == 'cerai_mati' ? 'selected' : '' }}>Cerai Mati</option>
                 </select>
                 </div>
 
@@ -1506,32 +1506,32 @@
                 
                 <div class="form-input-group form-col-full">
                   <label class="input-label">Alamat Lengkap <span class="text-red">*</span></label>
-                  <textarea name="alamat_lengkap" class="input-control" rows="2" required>{{ $val('alamat_lengkap', Auth::user()->alamat_lengkap) }}</textarea>
+                  <textarea name="alamat_lengkap" class="input-control" rows="2" required>{{ $val('alamat_lengkap', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->alamat_lengkap) }}</textarea>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">RT <span class="text-red">*</span></label>
-                  <input type="text" name="rt" class="input-control" value="{{ $val('rt', Auth::user()->rt) }}" required>
+                  <input type="text" name="rt" class="input-control" value="{{ $val('rt', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->rt) }}" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">RW <span class="text-red">*</span></label>
-                  <input type="text" name="rw" class="input-control" value="{{ $val('rw', Auth::user()->rw) }}" required>
+                  <input type="text" name="rw" class="input-control" value="{{ $val('rw', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->rw) }}" required>
                 </div>
 
                 <div class="form-input-group form-col-full">
                   <label class="input-label">Kelurahan <span class="text-red">*</span></label>
-                  <input type="text" name="kelurahan" class="input-control" value="{{ $val('kelurahan', Auth::user()->kelurahan) }}" required>
+                  <input type="text" name="kelurahan" class="input-control" value="{{ $val('kelurahan', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->kelurahan) }}" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">Kecamatan <span class="text-red">*</span></label>
-                  <input type="text" name="kecamatan" class="input-control" value="{{ $val('kecamatan', Auth::user()->kecamatan) }}" required>
+                  <input type="text" name="kecamatan" class="input-control" value="{{ $val('kecamatan', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->kecamatan) }}" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">Kota <span class="text-red">*</span></label>
-                  <input type="text" name="kota" class="input-control" value="{{ $val('kota', Auth::user()->kota) }}" required>
+                  <input type="text" name="kota" class="input-control" value="{{ $val('kota', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->kota) }}" required>
                 </div>
 
               </div>

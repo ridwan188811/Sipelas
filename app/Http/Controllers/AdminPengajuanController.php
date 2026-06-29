@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use App\Models\PengajuanSurat;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-
 use Illuminate\Support\Str;
 
 class AdminPengajuanController extends Controller
@@ -19,14 +18,10 @@ class AdminPengajuanController extends Controller
 
     public function index(Request $request)
     {
-        $user = Auth::user();
-        $displayName = $user->name;
-        if (!$displayName) {
-            $displayName = explode('@', $user->email)[0];
-            $displayName = ucwords(str_replace(['.', '_', '-'], ' ', $displayName));
-        }
+        $admin = Auth::guard('admin')->user();
+        $displayName = $admin->name ?? explode('@', $admin->email)[0];
 
-        $query = PengajuanSurat::with('user')
+        $query = PengajuanSurat::with('warga')
             ->where(function($q) {
                 $q->where('status', 'menunggu')
                   ->orWhere(function($q2) {
@@ -36,17 +31,14 @@ class AdminPengajuanController extends Controller
             })
             ->orderBy('created_at', 'desc');
 
-        // Filter Status
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
-        // Filter Jenis Surat
         if ($request->filled('jenis')) {
             $query->where('jenis_surat', $request->jenis);
         }
 
-        // Filter Periode
         if ($request->filled('periode')) {
             $now = Carbon::now();
             if ($request->periode == 'hari-ini') {
@@ -58,17 +50,14 @@ class AdminPengajuanController extends Controller
             }
         }
 
-        // Search
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
-                // Cari di nama user atau email
-                $q->whereHas('user', function($qUser) use ($search) {
+                $q->whereHas('warga', function($qUser) use ($search) {
                     $qUser->where('name', 'like', "%{$search}%")
-                          ->orWhere('email', 'like', "%{$search}%");
+                          ->orWhere('email', 'like', "%{$search}%")
+                          ->orWhere('nik', 'like', "%{$search}%");
                 });
-                // Cari NIK di data_isian
-                $q->orWhere('data_isian->nik', 'like', "%{$search}%");
             });
         }
 
@@ -79,15 +68,10 @@ class AdminPengajuanController extends Controller
 
     public function riwayat(Request $request)
     {
-        $user = Auth::user();
-        $displayName = $user->name;
-        if (!$displayName) {
-            $displayName = explode('@', $user->email)[0];
-            $displayName = ucwords(str_replace(['.', '_', '-'], ' ', $displayName));
-        }
+        $admin = Auth::guard('admin')->user();
+        $displayName = $admin->name ?? explode('@', $admin->email)[0];
 
-        // Riwayat biasanya hanya untuk yang sudah diproses
-        $query = PengajuanSurat::with('user')
+        $query = PengajuanSurat::with('warga')
             ->where(function($q) {
                 $q->where('status', 'ditolak')
                   ->orWhere(function($q2) {
@@ -97,30 +81,26 @@ class AdminPengajuanController extends Controller
             })
             ->orderBy('updated_at', 'desc');
 
-        // Filter Status
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
-        // Filter Jenis Surat
         if ($request->filled('jenis')) {
             $query->where('jenis_surat', $request->jenis);
         }
 
-        // Filter Rentang Tanggal
         if ($request->filled('start_date') && $request->filled('end_date')) {
             $query->whereBetween('updated_at', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
         }
 
-        // Search
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
-                $q->whereHas('user', function($qUser) use ($search) {
+                $q->whereHas('warga', function($qUser) use ($search) {
                     $qUser->where('name', 'like', "%{$search}%")
-                          ->orWhere('email', 'like', "%{$search}%");
+                          ->orWhere('email', 'like', "%{$search}%")
+                          ->orWhere('nik', 'like', "%{$search}%");
                 });
-                $q->orWhere('data_isian->nik', 'like', "%{$search}%");
             });
         }
 
@@ -131,21 +111,17 @@ class AdminPengajuanController extends Controller
 
     public function show($id)
     {
-        $user = Auth::user();
-        $displayName = $user->name;
-        if (!$displayName) {
-            $displayName = explode('@', $user->email)[0];
-            $displayName = ucwords(str_replace(['.', '_', '-'], ' ', $displayName));
-        }
+        $admin = Auth::guard('admin')->user();
+        $displayName = $admin->name ?? explode('@', $admin->email)[0];
 
-        $pengajuan = PengajuanSurat::with('user')->findOrFail($id);
+        $pengajuan = PengajuanSurat::with(['warga', 'detailSku', 'detailSktm', 'detailDomisili'])->findOrFail($id);
 
         return view('admin.detail-pengajuan', compact('displayName', 'pengajuan'));
     }
 
     public function proses(Request $request, $id)
     {
-        $pengajuan = PengajuanSurat::findOrFail($id);
+        $pengajuan = PengajuanSurat::with('warga')->findOrFail($id);
         
         if ($request->action == 'setujui') {
             $updateData = [
@@ -156,7 +132,6 @@ class AdminPengajuanController extends Controller
             if ($request->filled('nomor_surat')) {
                 $updateData['nomor_surat'] = $request->nomor_surat;
             } else {
-                // Generate nomor surat otomatis berdasarkan jenis surat
                 $bulanRomawi = ['01'=>'I','02'=>'II','03'=>'III','04'=>'IV','05'=>'V','06'=>'VI','07'=>'VII','08'=>'VIII','09'=>'IX','10'=>'X','11'=>'XI','12'=>'XII'];
                 $bulan = $bulanRomawi[date('m')];
                 $tahun = date('Y');
@@ -164,19 +139,12 @@ class AdminPengajuanController extends Controller
                 $noUrut = str_pad($pengajuan->id, 3, '0', STR_PAD_LEFT);
                 
                 $kodeSurat = [
-                    'sku' => '503', // Perekonomian/Perizinan
-                    'sktm' => '400.9', // Kesra
-                    'sktm-sekolah' => '400.9', // Kesra Pendidikan
-                    'domisili' => '470', // Kependudukan
-                    'belum-menikah' => '474.2', // Perkawinan
-                    'kelahiran' => '474.1', // Kelahiran
-                    'kematian' => '474.3', // Kematian
-                    'pengantar-nikah' => '474.2',
-                    'pindah' => '475'
+                    'sku' => '503', 'sktm' => '400.9', 'sktm-sekolah' => '400.9', 'domisili' => '470',
+                    'belum-menikah' => '474.2', 'kelahiran' => '474.1', 'kematian' => '474.3',
+                    'pengantar-nikah' => '474.2', 'pindah' => '475'
                 ];
                 $kode = $kodeSurat[$pengajuan->jenis_surat] ?? '400';
                 
-                // Format: Kode / No.Urut / Kel / Bulan / Tahun
                 $updateData['nomor_surat'] = $kode . '/' . $noUrut . '/Kel.Sbp/' . $bulan . '/' . $tahun;
             }
 
@@ -190,31 +158,23 @@ class AdminPengajuanController extends Controller
                 'catatan_admin' => $request->keterangan
             ]);
 
-            // Kirim email notifikasi secara sinkron
-            if ($pengajuan->user) {
+            if ($pengajuan->warga) {
                 try {
-                    \Illuminate\Support\Facades\Mail::to($pengajuan->user->email)->send(new \App\Mail\NotifikasiPengajuan($pengajuan, 'ditolak'));
-                } catch (\Exception $e) {
-                    \Illuminate\Support\Facades\Log::error("Gagal mengirim email: " . $e->getMessage());
-                }
+                    \Illuminate\Support\Facades\Mail::to($pengajuan->warga->email)->send(new \App\Mail\NotifikasiPengajuan($pengajuan, 'ditolak'));
+                } catch (\Exception $e) { }
             }
 
             return redirect()->route('admin.riwayat-pengajuan')->with('success', 'Pengajuan telah ditolak.');
         } elseif ($request->action == 'verifikasi') {
-            $pengajuan->update([
-                'is_verified_by_lurah' => true
-            ]);
+            $pengajuan->update(['is_verified_by_lurah' => true]);
 
-            // Kirim email notifikasi secara sinkron
-            if ($pengajuan->user) {
+            if ($pengajuan->warga) {
                 try {
-                    \Illuminate\Support\Facades\Mail::to($pengajuan->user->email)->send(new \App\Mail\NotifikasiPengajuan($pengajuan, 'disetujui'));
-                } catch (\Exception $e) {
-                    \Illuminate\Support\Facades\Log::error("Gagal mengirim email: " . $e->getMessage());
-                }
+                    \Illuminate\Support\Facades\Mail::to($pengajuan->warga->email)->send(new \App\Mail\NotifikasiPengajuan($pengajuan, 'disetujui'));
+                } catch (\Exception $e) { }
             }
 
-            return redirect()->route('admin.daftar-pengajuan')->with('success', 'Dokumen berhasil diverifikasi (TTE) oleh Lurah, dan email notifikasi telah dikirim ke Warga.');
+            return redirect()->route('admin.daftar-pengajuan')->with('success', 'Dokumen berhasil diverifikasi (TTE) oleh Lurah.');
         }
         
         return back();
@@ -227,13 +187,12 @@ class AdminPengajuanController extends Controller
             'action' => 'required|in:disetujui,ditolak'
         ]);
 
-        $pengajuan = PengajuanSurat::with('user')->find($request->pengajuan_id);
-        if ($pengajuan && $pengajuan->user) {
+        $pengajuan = PengajuanSurat::with('warga')->find($request->pengajuan_id);
+        if ($pengajuan && $pengajuan->warga) {
             try {
-                \Illuminate\Support\Facades\Mail::to($pengajuan->user->email)->send(new \App\Mail\NotifikasiPengajuan($pengajuan, $request->action));
+                \Illuminate\Support\Facades\Mail::to($pengajuan->warga->email)->send(new \App\Mail\NotifikasiPengajuan($pengajuan, $request->action));
                 return response()->json(['success' => true]);
             } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error("Gagal mengirim email: " . $e->getMessage());
                 return response()->json(['success' => false, 'error' => $e->getMessage()]);
             }
         }
@@ -242,16 +201,16 @@ class AdminPengajuanController extends Controller
 
     public function exportExcel(Request $request)
     {
-        $query = PengajuanSurat::query()->orderBy('created_at', 'desc');
+        $query = PengajuanSurat::with('warga')->orderBy('created_at', 'desc');
 
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
-                $q->whereHas('user', function($u) use ($search) {
+                $q->whereHas('warga', function($u) use ($search) {
                       $u->where('name', 'like', "%{$search}%")
-                        ->orWhere('email', 'like', "%{$search}%");
-                  })
-                  ->orWhere('data_isian->nik', 'like', "%{$search}%");
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('nik', 'like', "%{$search}%");
+                  });
             });
         }
 
@@ -286,18 +245,13 @@ class AdminPengajuanController extends Controller
                     'sktm' => 'Surat Keterangan Tidak Mampu',
                     'sktm-sekolah' => 'Surat Keterangan Tidak Mampu (Sekolah)',
                     'domisili' => 'Surat Keterangan Domisili',
-                    'belum-menikah' => 'Surat Keterangan Belum Menikah',
-                    'kelahiran' => 'Surat Keterangan Kelahiran',
-                    'kematian' => 'Surat Keterangan Kematian',
-                    'pengantar-nikah' => 'Surat Pengantar Nikah',
-                    'pindah' => 'Surat Keterangan Pindah'
                 ];
                 $jenis = $jenisSuratMap[$pengajuan->jenis_surat] ?? ucwords(str_replace('-', ' ', $pengajuan->jenis_surat));
                 
                 fputcsv($file, [
                     $index + 1,
-                    $pengajuan->data_isian['nik'] ?? '-',
-                    $pengajuan->user->name ?? explode('@', $pengajuan->user->email)[0],
+                    $pengajuan->warga->nik ?? '-',
+                    $pengajuan->warga->name ?? explode('@', $pengajuan->warga->email)[0],
                     $jenis,
                     strtoupper($pengajuan->status),
                     \Carbon\Carbon::parse($pengajuan->created_at)->translatedFormat('d F Y, H:i'),

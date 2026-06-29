@@ -6,21 +6,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Mail;
-use App\Models\User;
+use App\Models\Warga;
 
 class PasswordResetController extends Controller
 {
-    /**
-     * Display the password reset link request view.
-     */
     public function request()
     {
         return view('auth.forgot-password');
     }
 
-    /**
-     * Verify email and redirect to reset form.
-     */
     public function verifyEmail(Request $request)
     {
         $request->validate([
@@ -30,10 +24,10 @@ class PasswordResetController extends Controller
             'email.email' => 'Format email tidak valid.',
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        $warga = Warga::where('email', $request->email)->first();
 
-        if (!$user) {
-            return back()->withErrors(['email' => 'Email tidak terdaftar dalam sistem.'])->onlyInput('email');
+        if (!$warga) {
+            return back()->withErrors(['email' => 'Email tidak terdaftar dalam sistem (Hanya warga yang dapat mereset sandi).'])->onlyInput('email');
         }
 
         $url = URL::temporarySignedRoute(
@@ -42,17 +36,14 @@ class PasswordResetController extends Controller
             ['email' => $request->email]
         );
 
-        Mail::send('emails.lupa-kata-sandi', ['url' => $url, 'user' => $user], function ($message) use ($user) {
-            $message->to($user->email);
+        Mail::send('emails.lupa-kata-sandi', ['url' => $url, 'user' => $warga], function ($message) use ($warga) {
+            $message->to($warga->email);
             $message->subject('Reset Kata Sandi');
         });
 
         return back()->with('success', 'Tautan untuk mereset kata sandi telah dikirim ke email Anda. Silakan cek kotak masuk atau folder spam.');
     }
 
-    /**
-     * Display the password reset view.
-     */
     public function resetForm(Request $request)
     {
         if (!$request->hasValidSignature()) {
@@ -66,13 +57,10 @@ class PasswordResetController extends Controller
         return view('auth.reset-password', ['email' => $request->email]);
     }
 
-    /**
-     * Handle an incoming new password request.
-     */
     public function update(Request $request)
     {
         $request->validate([
-            'email' => 'required|email|exists:users,email',
+            'email' => 'required|email|exists:wargas,email',
             'password' => 'required|min:8',
             'password_confirm' => 'required|same:password',
         ], [
@@ -85,11 +73,11 @@ class PasswordResetController extends Controller
             'password_confirm.same' => 'Konfirmasi kata sandi tidak cocok.',
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        $warga = Warga::where('email', $request->email)->first();
         
-        if ($user) {
-            $user->password = Hash::make($request->password);
-            $user->save();
+        if ($warga) {
+            $warga->password = Hash::make($request->password);
+            $warga->save();
             return redirect()->route('login')->with('success', 'Kata sandi berhasil diubah! Silakan masuk dengan kata sandi baru Anda.');
         }
 

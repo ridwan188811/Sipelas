@@ -26,7 +26,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <img src="{{ asset('images/logo_tasikmalaya.png') }}" alt="Logo Tasikmalaya">
+            <img src="{{ $message->embed(public_path('images/logo_tasikmalaya.png')) }}" alt="Logo" style="height: 60px; margin-bottom: 15px; display: block;">
             <h1>Sistem Informasi Pelayanan Masyarakat</h1>
             <p>Kelurahan Sambongpari, Kota Tasikmalaya</p>
         </div>

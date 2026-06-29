@@ -11,13 +11,27 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('wargas', function (Blueprint $table) {
             $table->id();
             $table->string('name')->nullable();
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->enum('role', ['admin', 'warga'])->default('warga');
+            $table->string('no_hp')->nullable();
+            $table->string('nik')->unique()->nullable();
+            $table->string('tempat_lahir')->nullable();
+            $table->date('tanggal_lahir')->nullable();
+            $table->enum('jenis_kelamin', ['l', 'p'])->nullable();
+            $table->string('kewarganegaraan')->nullable();
+            $table->string('agama')->nullable();
+            $table->string('pekerjaan')->nullable();
+            $table->string('status_pernikahan')->nullable();
+            $table->text('alamat_lengkap')->nullable();
+            $table->string('rt')->nullable();
+            $table->string('rw')->nullable();
+            $table->string('kelurahan')->nullable();
+            $table->string('kecamatan')->nullable();
+            $table->string('kota')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
@@ -30,7 +44,8 @@ return new class extends Migration
 
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
-            $table->foreignId('user_id')->nullable()->index();
+            // changed to index only because foreignId might fail if multiple guards exist
+            $table->unsignedBigInteger('user_id')->nullable()->index();
             $table->string('ip_address', 45)->nullable();
             $table->text('user_agent')->nullable();
             $table->longText('payload');
@@ -43,7 +58,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('wargas');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
     }
