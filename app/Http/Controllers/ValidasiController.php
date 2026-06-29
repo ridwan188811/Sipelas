@@ -11,7 +11,7 @@ class ValidasiController extends Controller
 {
     public function show($token)
     {
-        $pengajuan = PengajuanSurat::with('user')->where('token_validasi', $token)->first();
+        $pengajuan = PengajuanSurat::with('warga')->where('token_validasi', $token)->first();
 
         $isValid = false;
         if ($pengajuan && strtolower($pengajuan->status) === 'disetujui' && $pengajuan->is_verified_by_lurah) {
