@@ -9,19 +9,6 @@ use App\Http\Controllers\ValidasiController;
 
 Route::get('/validasi/{token}', [ValidasiController::class, 'show'])->name('validasi');
 
-Route::get('/setup-admin', function () {
-    $admin = \App\Models\Admin::updateOrCreate(
-        ['email' => 'admin@gmail.com'],
-        [
-            'name' => 'Admin SIPELAS',
-            'password' => \Illuminate\Support\Facades\Hash::make('password'),
-            'email_verified_at' => now(),
-        ]
-    );
-    \Illuminate\Support\Facades\Auth::guard('admin')->login($admin);
-    return redirect()->route('admin.dashboard')->with('success', 'Berhasil login sebagai Admin!');
-});
-
 Route::middleware('guest:warga,admin')->group(function () {
     Route::get('/', function () { return view('auth.login'); })->name('login');
     Route::post('/', [AuthController::class, 'login'])->name('login.submit');
@@ -190,11 +177,4 @@ Route::middleware(['auth:warga', 'verified'])->prefix('user')->name('user.')->gr
     Route::delete('/pengajuan/{id}', [\App\Http\Controllers\PengajuanSuratController::class, 'destroy'])->name('pengajuan.destroy');
 });
 
-Route::get('/setup-database', function () {
-    try {
-        \Illuminate\Support\Facades\Artisan::call('migrate:fresh', ['--force' => true]);
-        return 'Database successfully migrated!';
-    } catch (\Exception $e) {
-        return $e->getMessage();
-    }
-});
+
