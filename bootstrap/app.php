@@ -20,6 +20,9 @@ $app = Application::configure(basePath: dirname(__DIR__))
             $request->user() && $request->user()->role === 'admin' ? '/admin/dashboard' : '/user/dashboard'
         );
 
+        // Pasang middleware keamanan secara global
+        $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
+
         // Pasang middleware anti-back ke semua web routes
         $middleware->web(append: [
             \App\Http\Middleware\PreventBackHistory::class,
