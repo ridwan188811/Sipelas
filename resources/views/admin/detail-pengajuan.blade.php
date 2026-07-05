@@ -522,7 +522,9 @@
                   if (in_array($key, $dataDiriKeys)) {
                       $dataDiri[$key] = $value;
                   } else {
-                      $dataUsaha[$key] = $value;
+                      if ($value !== '' && $value !== null) {
+                          $dataUsaha[$key] = $value;
+                      }
                   }
               }
           }

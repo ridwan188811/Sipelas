@@ -358,7 +358,13 @@
                 foreach($pengajuan->data_isian as $key => $value) {
                     if (str_starts_with($key, 'dokumen_')) continue;
                     if (in_array($key, $ignoredKeys)) continue;
-                    if (in_array($key, $dataDiriKeys)) { $dataDiri[$key] = $value; } else { $dataUsaha[$key] = $value; }
+                    if (in_array($key, $dataDiriKeys)) { 
+                        $dataDiri[$key] = $value; 
+                    } else { 
+                        if ($value !== '' && $value !== null) {
+                            $dataUsaha[$key] = $value; 
+                        }
+                    }
                 }
             }
             $jkMap = ['l' => 'Laki-laki', 'p' => 'Perempuan'];
