@@ -510,7 +510,7 @@
 
         <!-- Card 2: Data Diri & Isian -->
         @php
-          $dataDiriKeys = ['nik', 'nama_lengkap', 'jenis_kelamin', 'tempat_lahir', 'tanggal_lahir', 'kewarganegaraan', 'agama', 'pekerjaan', 'status_pernikahan', 'rt', 'rw', 'alamat_lengkap', 'kelurahan', 'kecamatan', 'kota', 'nama_yang_menggunakan_surat', 'hubungan_dengan_pemohon', 'lama_berdomisili', 'status_pemilikan___alasan', 'alamat_domisili', 'rt_domisili', 'rw_domisili', 'kelurahan_domisili', 'kecamatan_domisili', 'kota_domisili'];
+          $dataDiriKeys = ['nik', 'nama_lengkap', 'jenis_kelamin', 'tempat_lahir', 'tanggal_lahir', 'kewarganegaraan', 'agama', 'pekerjaan', 'status_pernikahan', 'rt', 'rw', 'alamat_lengkap', 'kelurahan', 'kecamatan', 'kota', 'lama_berdomisili', 'status_pemilikan___alasan', 'alamat_domisili', 'rt_domisili', 'rw_domisili', 'kelurahan_domisili', 'kecamatan_domisili', 'kota_domisili'];
           $ignoredKeys = ['id', 'warga_id', 'pengajuan_surat_id', 'created_at', 'updated_at', 'name', 'email', 'email_verified_at', 'password', 'remember_token', 'no_hp'];
           $dataDiri = [];
           $dataUsaha = [];
