@@ -12,7 +12,7 @@ class AdminPengajuanController extends Controller
 {
     public function markNotifRead()
     {
-        PengajuanSurat::where('status', 'menunggu')->where('is_read_by_admin', false)->update(['is_read_by_admin' => true]);
+        PengajuanSurat::where('status', 'menunggu')->where('is_read_by_admin', \Illuminate\Support\Facades\DB::raw('false'))->update(['is_read_by_admin' => true]);
         return response()->json(['success' => true]);
     }
 

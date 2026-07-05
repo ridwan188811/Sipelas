@@ -24,7 +24,7 @@ class NotificationController extends Controller
 
         if ($isAdmin) {
             $notifList = PengajuanSurat::with('warga')->where('status', 'menunggu')->orderBy('created_at', 'desc')->take(5)->get();
-            $notifCount = PengajuanSurat::where('status', 'menunggu')->where('is_read_by_admin', false)->count();
+            $notifCount = PengajuanSurat::where('status', 'menunggu')->where('is_read_by_admin', \Illuminate\Support\Facades\DB::raw('false'))->count();
             
             $latest = PengajuanSurat::where('status', 'menunggu')->orderBy('created_at', 'desc')->first();
             if ($latest) $lastUpdated = $latest->created_at->toDateTimeString();
@@ -51,7 +51,7 @@ class NotificationController extends Controller
                 ->get();
             $notifCount = PengajuanSurat::where('warga_id', $wargaId)
                 ->whereIn('status', ['disetujui', 'ditolak'])
-                ->where('is_read_by_user', false)
+                ->where('is_read_by_user', \Illuminate\Support\Facades\DB::raw('false'))
                 ->count();
                 
             $latest = PengajuanSurat::where('warga_id', $wargaId)->orderBy('updated_at', 'desc')->first();

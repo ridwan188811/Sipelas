@@ -13,7 +13,7 @@ class PengajuanSuratController extends Controller
         $wargaId = Auth::guard('warga')->id();
         PengajuanSurat::where('warga_id', $wargaId)
             ->whereIn('status', ['disetujui', 'ditolak'])
-            ->where('is_read_by_user', false)
+            ->where('is_read_by_user', \Illuminate\Support\Facades\DB::raw('false'))
             ->update(['is_read_by_user' => true]);
         return response()->json(['success' => true]);
     }
