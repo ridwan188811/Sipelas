@@ -12,7 +12,7 @@ class AdminPengajuanController extends Controller
 {
     public function markNotifRead()
     {
-        PengajuanSurat::where('status', 'menunggu')->where('is_read_by_admin', \Illuminate\Support\Facades\DB::raw('false'))->update(['is_read_by_admin' => true]);
+        PengajuanSurat::where('status', 'menunggu')->where('is_read_by_admin', \Illuminate\Support\Facades\DB::raw('false'))->update(['is_read_by_admin' => \Illuminate\Support\Facades\DB::raw('true')]);
         return response()->json(['success' => true]);
     }
 
@@ -166,7 +166,7 @@ class AdminPengajuanController extends Controller
 
             return redirect()->route('admin.riwayat-pengajuan')->with('success', 'Pengajuan telah ditolak.');
         } elseif ($request->action == 'verifikasi') {
-            $pengajuan->update(['is_verified_by_lurah' => true]);
+            $pengajuan->update(['is_verified_by_lurah' => \Illuminate\Support\Facades\DB::raw('true')]);
 
             if ($pengajuan->warga) {
                 try {
