@@ -36,6 +36,11 @@ class PengajuanSurat extends Model
         } elseif ($this->jenis_surat == 'domisili' && $this->detailDomisili) {
             $data = array_merge($data, $this->detailDomisili->toArray());
         }
+
+        if (isset($data['name']) && !isset($data['nama_lengkap'])) {
+            $data['nama_lengkap'] = $data['name'];
+        }
+
         return $data;
     }
 
