@@ -17,7 +17,7 @@ $app = Application::configure(basePath: dirname(__DIR__))
 
         // Atur halaman tujuan otomatis bagi user yang sudah login (guest redirection)
         $middleware->redirectUsersTo(fn (Request $request) => 
-            $request->user() && $request->user()->role === 'admin' ? '/admin/dashboard' : '/user/dashboard'
+            \Illuminate\Support\Facades\Auth::guard('admin')->check() ? '/admin/dashboard' : '/user/dashboard'
         );
 
         // Pasang middleware keamanan secara global
