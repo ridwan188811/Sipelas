@@ -9,6 +9,11 @@ use App\Http\Controllers\ValidasiController;
 
 Route::get('/validasi/{token}', [ValidasiController::class, 'show'])->name('validasi');
 
+Route::get('/run-migrations', function () {
+    \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+    return "Migrations executed successfully! " . \Illuminate\Support\Facades\Artisan::output();
+});
+
 Route::middleware('guest:warga,admin')->group(function () {
     Route::get('/', function () { return view('auth.login'); })->name('login');
     Route::post('/', [AuthController::class, 'login'])->name('login.submit');
