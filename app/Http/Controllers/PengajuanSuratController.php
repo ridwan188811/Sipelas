@@ -57,7 +57,14 @@ class PengajuanSuratController extends Controller
         
         $dokumenPendukung = [];
         foreach ($request->allFiles() as $key => $file) {
-            $path = $file->store('dokumen_pengajuan', 'public');
+            $path = 'dokumen_pengajuan/' . \Illuminate\Support\Str::random(40) . '.' . $file->getClientOriginalExtension();
+            \Illuminate\Support\Facades\DB::table('dokumen_files')->insert([
+                'path' => $path,
+                'base64_data' => base64_encode(file_get_contents($file->getRealPath())),
+                'mime_type' => $file->getMimeType(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
             $dokumenPendukung[$key] = $path;
         }
 

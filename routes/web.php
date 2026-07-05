@@ -62,6 +62,15 @@ Route::get('/check-notif', [\App\Http\Controllers\NotificationController::class,
 Route::get('/preview-dokumen', function (Request $request) {
     if (!$request->has('path')) abort(404);
     $path = $request->query('path');
+    
+    $dokumen = \Illuminate\Support\Facades\DB::table('dokumen_files')->where('path', $path)->first();
+    if ($dokumen) {
+        $fileData = base64_decode($dokumen->base64_data);
+        return response($fileData, 200)
+            ->header('Content-Type', $dokumen->mime_type)
+            ->header('Content-Disposition', 'inline; filename="'.basename($path).'"');
+    }
+
     $fullPath = storage_path('app/public/' . $path);
     if (!file_exists($fullPath)) abort(404, 'Dokumen tidak ditemukan.');
     $ext = strtolower(pathinfo($fullPath, PATHINFO_EXTENSION));
