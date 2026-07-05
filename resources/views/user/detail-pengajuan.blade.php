@@ -350,12 +350,14 @@
           <!-- Data Diri Pemohon -->
           @php
             $dataDiriKeys = ['nik', 'nama_lengkap', 'jenis_kelamin', 'tempat_lahir', 'tanggal_lahir', 'kewarganegaraan', 'agama', 'pekerjaan', 'status_pernikahan', 'rt', 'rw', 'alamat_lengkap', 'kelurahan', 'kecamatan', 'kota', 'nama_yang_menggunakan_surat', 'hubungan_dengan_pemohon', 'lama_berdomisili', 'status_pemilikan___alasan', 'alamat_domisili', 'rt_domisili', 'rw_domisili', 'kelurahan_domisili', 'kecamatan_domisili', 'kota_domisili'];
+            $ignoredKeys = ['id', 'warga_id', 'pengajuan_surat_id', 'created_at', 'updated_at', 'name', 'email', 'email_verified_at', 'password', 'remember_token', 'no_hp'];
             $dataDiri = [];
             $dataUsaha = [];
             
             if ($pengajuan->data_isian) {
                 foreach($pengajuan->data_isian as $key => $value) {
                     if (str_starts_with($key, 'dokumen_')) continue;
+                    if (in_array($key, $ignoredKeys)) continue;
                     if (in_array($key, $dataDiriKeys)) { $dataDiri[$key] = $value; } else { $dataUsaha[$key] = $value; }
                 }
             }
