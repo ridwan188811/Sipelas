@@ -26,7 +26,7 @@ class AdminPengajuanController extends Controller
                 $q->where('status', 'menunggu')
                   ->orWhere(function($q2) {
                       $q2->where('status', 'disetujui')
-                         ->where('is_verified_by_lurah', false);
+                         ->where('is_verified_by_lurah', \Illuminate\Support\Facades\DB::raw('false'));
                   });
             })
             ->orderBy('created_at', 'desc');
@@ -76,7 +76,7 @@ class AdminPengajuanController extends Controller
                 $q->where('status', 'ditolak')
                   ->orWhere(function($q2) {
                       $q2->where('status', 'disetujui')
-                         ->where('is_verified_by_lurah', true);
+                         ->where('is_verified_by_lurah', \Illuminate\Support\Facades\DB::raw('true'));
                   });
             })
             ->orderBy('updated_at', 'desc');
