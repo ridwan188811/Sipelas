@@ -187,8 +187,7 @@ class PengajuanSuratController extends Controller
         
         if ($pengajuan->warga_id === $wargaId) {
             if (!$pengajuan->is_read_by_user && in_array($pengajuan->status, ['disetujui', 'ditolak'])) {
-                $pengajuan->is_read_by_user = true;
-                $pengajuan->save();
+                $pengajuan->update(['is_read_by_user' => \Illuminate\Support\Facades\DB::raw('true')]);
             }
         }
         
