@@ -7,6 +7,10 @@ class PengajuanSurat extends Model
 {
     protected $guarded = [];
 
+    protected $casts = [
+        'is_read_by_user' => 'boolean',
+    ];
+
     public function warga() {
         return $this->belongsTo(Warga::class);
     }
