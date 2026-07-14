@@ -920,7 +920,7 @@
               
               <div class="form-input-group form-col-full">
                 <label class="input-label">Nama Lengkap <span class="text-red">*</span></label>
-                <input type="text" name="nama_lengkap" class="input-control" value="" placeholder="Masukkan nama lengkap Kepala Keluarga" required>
+                <input type="text" name="nama_lengkap" class="input-control" value="" placeholder="Masukkan nama lengkap Kepala Keluarga" oninput="this.value = this.value.replace(/[0-9]/g, '');" required>
               </div>
 
               <div class="form-input-group">
@@ -1042,7 +1042,7 @@
 
               <div class="form-input-group form-col-full">
                 <label class="input-label">Nama yang Menggunakan Surat <span class="text-red">*</span></label>
-                <input type="text" name="nama_yang_menggunakan_surat" class="input-control" placeholder="Contoh: KYRA RAYNA ADELIA" required>
+                <input type="text" name="nama_yang_menggunakan_surat" class="input-control" placeholder="Contoh: KYRA RAYNA ADELIA" oninput="this.value = this.value.replace(/[0-9]/g, '');" required>
               </div>
 
               <div class="form-input-group form-col-full">
@@ -1147,7 +1147,7 @@
                 
                 <div class="form-input-group form-col-full">
                   <label class="input-label">Nama Lengkap <span class="text-red">*</span></label>
-                  <input type="text" name="nama_lengkap" class="input-control" value="{{ $val('nama_lengkap', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->name) }}" required>
+                  <input type="text" name="nama_lengkap" class="input-control" value="{{ $val('nama_lengkap', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->name) }}" oninput="this.value = this.value.replace(/[0-9]/g, '');" required>
                 </div>
 
                 <div class="form-input-group">
@@ -1430,7 +1430,7 @@
                 
                 <div class="form-input-group form-col-full">
                   <label class="input-label">Nama Lengkap <span class="text-red">*</span></label>
-                  <input type="text" name="nama_lengkap" class="input-control" value="{{ $val('nama_lengkap', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->name) }}" required>
+                  <input type="text" name="nama_lengkap" class="input-control" value="{{ $val('nama_lengkap', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->name) }}" oninput="this.value = this.value.replace(/[0-9]/g, '');" required>
                 </div>
 
                 <div class="form-input-group">

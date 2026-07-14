@@ -431,7 +431,7 @@
             <div class="form-grid">
               <div class="form-group form-col-full">
                 <label>Nama Lengkap</label>
-                <input type="text" id="nameInput" name="name" class="input-readonly editable-field" value="{{ (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->name ?? '' }}" readonly>
+                <input type="text" id="nameInput" name="name" class="input-readonly editable-field" value="{{ (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->name ?? '' }}" oninput="this.value = this.value.replace(/[0-9]/g, '');" readonly>
               </div>
 
               <div class="form-group">

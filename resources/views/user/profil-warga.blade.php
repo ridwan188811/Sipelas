@@ -478,7 +478,7 @@
             <div class="form-grid">
               <div class="form-group form-col-full">
                 <label>Nama Lengkap</label>
-                <input type="text" name="name" class="input-control" value="{{ old('name', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->name) }}" placeholder="Masukkan nama lengkap sesuai KTP" required>
+                <input type="text" name="name" class="input-control" value="{{ old('name', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->name) }}" placeholder="Masukkan nama lengkap sesuai KTP" oninput="this.value = this.value.replace(/[0-9]/g, '');" required>
               </div>
               <div class="form-group">
                 <label>NIK</label>
