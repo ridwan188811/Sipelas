@@ -592,6 +592,7 @@
         <div class="page-title">
           <h2>Riwayat Pengajuan</h2>
           <p>Daftar riwayat pengajuan surat warga yang telah diproses</p>
+        </div>
       </div>
 
       <!-- Filter Bar -->
