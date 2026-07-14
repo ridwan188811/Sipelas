@@ -85,6 +85,8 @@ Route::get('/pengajuan/{id}/cetak-surat', [\App\Http\Controllers\CetakSuratContr
 
 // Admin Routes
 Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/laporan', [\App\Http\Controllers\AdminLaporanController::class, 'index'])->name('laporan');
+    Route::get('/laporan/cetak-pdf', [\App\Http\Controllers\AdminLaporanController::class, 'cetakPdf'])->name('laporan.cetak-pdf');
     Route::post('/mark-notif-read', [\App\Http\Controllers\AdminPengajuanController::class, 'markNotifRead'])->name('mark-notif-read');
     Route::get('/dashboard', [\App\Http\Controllers\AdminDashboardController::class, 'index'])->name('dashboard');
     Route::get('/verifikasi-surat', [\App\Http\Controllers\AdminPengajuanController::class, 'index'])->name('daftar-pengajuan');
