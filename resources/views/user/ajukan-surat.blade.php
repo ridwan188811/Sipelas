@@ -925,7 +925,7 @@
 
               <div class="form-input-group">
                 <label class="input-label">NIK <span class="text-red">*</span></label>
-                <input type="text" name="nik" class="input-control" value="" placeholder="Contoh: 3206012345678901" required>
+                <input type="text" name="nik" class="input-control" value="" placeholder="Contoh: 3206012345678901" oninput="this.value = this.value.replace(/[^0-9]/g, '');" required>
               </div>
 
               <div class="form-input-group">
@@ -939,7 +939,7 @@
 
               <div class="form-input-group">
                 <label class="input-label">Tempat Lahir <span class="text-red">*</span></label>
-                <input type="text" name="tempat_lahir" class="input-control" value="" placeholder="Contoh: Tasikmalaya" required>
+                <input type="text" name="tempat_lahir" class="input-control" value="" placeholder="Contoh: Tasikmalaya" oninput="this.value = this.value.replace(/[0-9]/g, '');" required>
               </div>
 
               <div class="form-input-group">
@@ -949,7 +949,7 @@
 
               <div class="form-input-group">
                 <label class="input-label">Kewarganegaraan <span class="text-red">*</span></label>
-                <input type="text" name="kewarganegaraan" class="input-control" value="" placeholder="Contoh: WNI" required>
+                <input type="text" name="kewarganegaraan" class="input-control" value="" placeholder="Contoh: WNI" oninput="this.value = this.value.replace(/[0-9]/g, '');" required>
               </div>
 
               <div class="form-input-group">
@@ -967,7 +967,7 @@
 
               <div class="form-input-group">
                 <label class="input-label">Pekerjaan <span class="text-red">*</span></label>
-                <input type="text" name="pekerjaan" class="input-control" value="" placeholder="Contoh: Wiraswasta / Petani" required>
+                <input type="text" name="pekerjaan" class="input-control" value="" placeholder="Contoh: Wiraswasta / Petani" oninput="this.value = this.value.replace(/[0-9]/g, '');" required>
               </div>
 
               <div class="form-input-group">
@@ -988,27 +988,27 @@
 
               <div class="form-input-group">
                 <label class="input-label">RT <span class="text-red">*</span></label>
-                <input type="text" name="rt" class="input-control" value="" placeholder="Contoh: 001" required>
+                <input type="text" name="rt" class="input-control" value="" placeholder="Contoh: 001" oninput="this.value = this.value.replace(/[^0-9]/g, '');" required>
               </div>
 
               <div class="form-input-group">
                 <label class="input-label">RW <span class="text-red">*</span></label>
-                <input type="text" name="rw" class="input-control" value="" placeholder="Contoh: 005" required>
+                <input type="text" name="rw" class="input-control" value="" placeholder="Contoh: 005" oninput="this.value = this.value.replace(/[^0-9]/g, '');" required>
               </div>
 
               <div class="form-input-group form-col-full">
                 <label class="input-label">Kelurahan <span class="text-red">*</span></label>
-                <input type="text" name="kelurahan" class="input-control" value="" placeholder="Contoh: Mangkubumi" required>
+                <input type="text" name="kelurahan" class="input-control" value="" placeholder="Contoh: Mangkubumi" oninput="this.value = this.value.replace(/[0-9]/g, '');" required>
               </div>
 
               <div class="form-input-group">
                 <label class="input-label">Kecamatan <span class="text-red">*</span></label>
-                <input type="text" name="kecamatan" class="input-control" value="" placeholder="Contoh: Mangkubumi" required>
+                <input type="text" name="kecamatan" class="input-control" value="" placeholder="Contoh: Mangkubumi" oninput="this.value = this.value.replace(/[0-9]/g, '');" required>
               </div>
 
               <div class="form-input-group">
                 <label class="input-label">Kota <span class="text-red">*</span></label>
-                <input type="text" name="kota" class="input-control" value="" placeholder="Contoh: Kota Tasikmalaya" required>
+                <input type="text" name="kota" class="input-control" value="" placeholder="Contoh: Kota Tasikmalaya" oninput="this.value = this.value.replace(/[0-9]/g, '');" required>
               </div>
 
             </div>
@@ -1152,7 +1152,7 @@
 
                 <div class="form-input-group">
                   <label class="input-label">NIK <span class="text-red">*</span></label>
-                  <input type="text" name="nik" class="input-control" value="{{ $val('nik', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->nik) }}" required>
+                  <input type="text" name="nik" class="input-control" value="{{ $val('nik', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->nik) }}" oninput="this.value = this.value.replace(/[^0-9]/g, '');" required>
                 </div>
 
                 <div class="form-input-group">
@@ -1166,7 +1166,7 @@
 
                 <div class="form-input-group">
                   <label class="input-label">Tempat Lahir <span class="text-red">*</span></label>
-                  <input type="text" name="tempat_lahir" class="input-control" value="{{ $val('tempat_lahir', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->tempat_lahir) }}" required>
+                  <input type="text" name="tempat_lahir" class="input-control" value="{{ $val('tempat_lahir', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->tempat_lahir) }}" oninput="this.value = this.value.replace(/[0-9]/g, '');" required>
                 </div>
 
                 <div class="form-input-group">
@@ -1176,7 +1176,7 @@
 
                 <div class="form-input-group">
                   <label class="input-label">Kewarganegaraan <span class="text-red">*</span></label>
-                  <input type="text" name="kewarganegaraan" class="input-control" value="{{ $val('kewarganegaraan', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->kewarganegaraan) }}" required>
+                  <input type="text" name="kewarganegaraan" class="input-control" value="{{ $val('kewarganegaraan', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->kewarganegaraan) }}" oninput="this.value = this.value.replace(/[0-9]/g, '');" required>
                 </div>
 
                 <div class="form-input-group">
@@ -1194,7 +1194,7 @@
 
                 <div class="form-input-group">
                   <label class="input-label">Pekerjaan <span class="text-red">*</span></label>
-                  <input type="text" name="pekerjaan" class="input-control" value="{{ $val('pekerjaan', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->pekerjaan) }}" required>
+                  <input type="text" name="pekerjaan" class="input-control" value="{{ $val('pekerjaan', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->pekerjaan) }}" oninput="this.value = this.value.replace(/[0-9]/g, '');" required>
                 </div>
 
                 <div class="form-input-group">
@@ -1215,27 +1215,27 @@
 
                 <div class="form-input-group">
                   <label class="input-label">RT <span class="text-red">*</span></label>
-                  <input type="text" name="rt" class="input-control" value="{{ $val('rt', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->rt) }}" required>
+                  <input type="text" name="rt" class="input-control" value="{{ $val('rt', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->rt) }}" oninput="this.value = this.value.replace(/[^0-9]/g, '');" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">RW <span class="text-red">*</span></label>
-                  <input type="text" name="rw" class="input-control" value="{{ $val('rw', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->rw) }}" required>
+                  <input type="text" name="rw" class="input-control" value="{{ $val('rw', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->rw) }}" oninput="this.value = this.value.replace(/[^0-9]/g, '');" required>
                 </div>
 
                 <div class="form-input-group form-col-full">
                   <label class="input-label">Kelurahan <span class="text-red">*</span></label>
-                  <input type="text" name="kelurahan" class="input-control" value="{{ $val('kelurahan', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->kelurahan) }}" required>
+                  <input type="text" name="kelurahan" class="input-control" value="{{ $val('kelurahan', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->kelurahan) }}" oninput="this.value = this.value.replace(/[0-9]/g, '');" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">Kecamatan <span class="text-red">*</span></label>
-                  <input type="text" name="kecamatan" class="input-control" value="{{ $val('kecamatan', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->kecamatan) }}" required>
+                  <input type="text" name="kecamatan" class="input-control" value="{{ $val('kecamatan', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->kecamatan) }}" oninput="this.value = this.value.replace(/[0-9]/g, '');" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">Kota <span class="text-red">*</span></label>
-                  <input type="text" name="kota" class="input-control" value="{{ $val('kota', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->kota) }}" required>
+                  <input type="text" name="kota" class="input-control" value="{{ $val('kota', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->kota) }}" oninput="this.value = this.value.replace(/[0-9]/g, '');" required>
                 </div>
 
               </div>
@@ -1291,7 +1291,7 @@
 
                 <div class="form-input-group">
                   <label class="input-label">Sejak Tahun <span class="text-red">*</span></label>
-                  <input type="text" name="sejak_tahun" class="input-control" placeholder="Contoh: 2020" required>
+                  <input type="text" name="sejak_tahun" class="input-control" placeholder="Contoh: 2020" oninput="this.value = this.value.replace(/[^0-9]/g, '');" required>
                 </div>
 
                 <div class="form-input-group form-col-full">
@@ -1435,7 +1435,7 @@
 
                 <div class="form-input-group">
                   <label class="input-label">NIK <span class="text-red">*</span></label>
-                  <input type="text" name="nik" class="input-control" value="{{ $val('nik', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->nik) }}" required>
+                  <input type="text" name="nik" class="input-control" value="{{ $val('nik', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->nik) }}" oninput="this.value = this.value.replace(/[^0-9]/g, '');" required>
                 </div>
 
                 <div class="form-input-group">
@@ -1449,7 +1449,7 @@
 
                 <div class="form-input-group">
                   <label class="input-label">Tempat Lahir <span class="text-red">*</span></label>
-                  <input type="text" name="tempat_lahir" class="input-control" value="{{ $val('tempat_lahir', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->tempat_lahir) }}" required>
+                  <input type="text" name="tempat_lahir" class="input-control" value="{{ $val('tempat_lahir', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->tempat_lahir) }}" oninput="this.value = this.value.replace(/[0-9]/g, '');" required>
                 </div>
 
                 <div class="form-input-group">
@@ -1459,7 +1459,7 @@
 
                 <div class="form-input-group">
                   <label class="input-label">Kewarganegaraan <span class="text-red">*</span></label>
-                  <input type="text" name="kewarganegaraan" class="input-control" value="{{ $val('kewarganegaraan', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->kewarganegaraan) }}" required>
+                  <input type="text" name="kewarganegaraan" class="input-control" value="{{ $val('kewarganegaraan', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->kewarganegaraan) }}" oninput="this.value = this.value.replace(/[0-9]/g, '');" required>
                 </div>
 
                 <div class="form-input-group">
@@ -1477,7 +1477,7 @@
 
                 <div class="form-input-group">
                   <label class="input-label">Pekerjaan <span class="text-red">*</span></label>
-                  <input type="text" name="pekerjaan" class="input-control" value="{{ $val('pekerjaan', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->pekerjaan) }}" required>
+                  <input type="text" name="pekerjaan" class="input-control" value="{{ $val('pekerjaan', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->pekerjaan) }}" oninput="this.value = this.value.replace(/[0-9]/g, '');" required>
                 </div>
 
                 <div class="form-input-group">
@@ -1511,27 +1511,27 @@
 
                 <div class="form-input-group">
                   <label class="input-label">RT <span class="text-red">*</span></label>
-                  <input type="text" name="rt" class="input-control" value="{{ $val('rt', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->rt) }}" required>
+                  <input type="text" name="rt" class="input-control" value="{{ $val('rt', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->rt) }}" oninput="this.value = this.value.replace(/[^0-9]/g, '');" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">RW <span class="text-red">*</span></label>
-                  <input type="text" name="rw" class="input-control" value="{{ $val('rw', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->rw) }}" required>
+                  <input type="text" name="rw" class="input-control" value="{{ $val('rw', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->rw) }}" oninput="this.value = this.value.replace(/[^0-9]/g, '');" required>
                 </div>
 
                 <div class="form-input-group form-col-full">
                   <label class="input-label">Kelurahan <span class="text-red">*</span></label>
-                  <input type="text" name="kelurahan" class="input-control" value="{{ $val('kelurahan', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->kelurahan) }}" required>
+                  <input type="text" name="kelurahan" class="input-control" value="{{ $val('kelurahan', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->kelurahan) }}" oninput="this.value = this.value.replace(/[0-9]/g, '');" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">Kecamatan <span class="text-red">*</span></label>
-                  <input type="text" name="kecamatan" class="input-control" value="{{ $val('kecamatan', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->kecamatan) }}" required>
+                  <input type="text" name="kecamatan" class="input-control" value="{{ $val('kecamatan', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->kecamatan) }}" oninput="this.value = this.value.replace(/[0-9]/g, '');" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">Kota <span class="text-red">*</span></label>
-                  <input type="text" name="kota" class="input-control" value="{{ $val('kota', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->kota) }}" required>
+                  <input type="text" name="kota" class="input-control" value="{{ $val('kota', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->kota) }}" oninput="this.value = this.value.replace(/[0-9]/g, '');" required>
                 </div>
 
               </div>
@@ -1554,27 +1554,27 @@
 
                 <div class="form-input-group">
                   <label class="input-label">RT <span class="text-red">*</span></label>
-                  <input type="text" name="rt_domisili" class="input-control" placeholder="Contoh: 001" required>
+                  <input type="text" name="rt_domisili" class="input-control" placeholder="Contoh: 001" oninput="this.value = this.value.replace(/[^0-9]/g, '');" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">RW <span class="text-red">*</span></label>
-                  <input type="text" name="rw_domisili" class="input-control" placeholder="Contoh: 005" required>
+                  <input type="text" name="rw_domisili" class="input-control" placeholder="Contoh: 005" oninput="this.value = this.value.replace(/[^0-9]/g, '');" required>
                 </div>
 
                 <div class="form-input-group form-col-full">
                   <label class="input-label">Kelurahan <span class="text-red">*</span></label>
-                  <input type="text" name="kelurahan_domisili" class="input-control" placeholder="Contoh: Sambongpari" required>
+                  <input type="text" name="kelurahan_domisili" class="input-control" placeholder="Contoh: Sambongpari" oninput="this.value = this.value.replace(/[0-9]/g, '');" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">Kecamatan <span class="text-red">*</span></label>
-                  <input type="text" name="kecamatan_domisili" class="input-control" placeholder="Contoh: Mangkubumi" required>
+                  <input type="text" name="kecamatan_domisili" class="input-control" placeholder="Contoh: Mangkubumi" oninput="this.value = this.value.replace(/[0-9]/g, '');" required>
                 </div>
 
                 <div class="form-input-group">
                   <label class="input-label">Kota <span class="text-red">*</span></label>
-                  <input type="text" name="kota_domisili" class="input-control" placeholder="Contoh: Kota Tasikmalaya" required>
+                  <input type="text" name="kota_domisili" class="input-control" placeholder="Contoh: Kota Tasikmalaya" oninput="this.value = this.value.replace(/[0-9]/g, '');" required>
                 </div>
 
               </div>

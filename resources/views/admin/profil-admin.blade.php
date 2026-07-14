@@ -436,7 +436,7 @@
 
               <div class="form-group">
                 <label>Jabatan</label>
-                <input type="text" name="jabatan" class="input-readonly editable-field" value="{{ (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->jabatan ?? 'Operator' }}" readonly>
+                <input type="text" name="jabatan" class="input-readonly editable-field" value="{{ (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->jabatan ?? 'Operator' }}" oninput="this.value = this.value.replace(/[0-9]/g, '');" readonly>
               </div>
 
               <div class="form-group">

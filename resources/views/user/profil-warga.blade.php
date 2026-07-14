@@ -482,15 +482,15 @@
               </div>
               <div class="form-group">
                 <label>NIK</label>
-                <input type="text" name="nik" class="input-control" value="{{ old('nik', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->nik) }}" placeholder="Masukkan 16 digit NIK" required>
+                <input type="text" name="nik" class="input-control" value="{{ old('nik', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->nik) }}" placeholder="Masukkan 16 digit NIK" oninput="this.value = this.value.replace(/[^0-9]/g, '');" required>
               </div>
               <div class="form-group">
                 <label>No. WhatsApp / HP</label>
-                <input type="text" name="no_hp" class="input-control" value="{{ old('no_hp', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->no_hp) }}" placeholder="Contoh: 081234567890">
+                <input type="text" name="no_hp" class="input-control" value="{{ old('no_hp', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->no_hp) }}" placeholder="Contoh: 081234567890" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
               </div>
               <div class="form-group">
                 <label>Tempat Lahir</label>
-                <input type="text" name="tempat_lahir" class="input-control" value="{{ old('tempat_lahir', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->tempat_lahir) }}" placeholder="Contoh: Tasikmalaya" required>
+                <input type="text" name="tempat_lahir" class="input-control" value="{{ old('tempat_lahir', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->tempat_lahir) }}" placeholder="Contoh: Tasikmalaya" oninput="this.value = this.value.replace(/[0-9]/g, '');" required>
               </div>
               <div class="form-group">
                 <label>Tanggal Lahir</label>
@@ -506,7 +506,7 @@
               </div>
               <div class="form-group">
                 <label>Kewarganegaraan</label>
-                <input type="text" name="kewarganegaraan" class="input-control" value="{{ old('kewarganegaraan', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->kewarganegaraan ?? 'WNI') }}" placeholder="Contoh: WNI" required>
+                <input type="text" name="kewarganegaraan" class="input-control" value="{{ old('kewarganegaraan', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->kewarganegaraan ?? 'WNI') }}" placeholder="Contoh: WNI" oninput="this.value = this.value.replace(/[0-9]/g, '');" required>
               </div>
               <div class="form-group">
                 <label>Agama</label>
@@ -522,7 +522,7 @@
               </div>
               <div class="form-group">
                 <label>Pekerjaan</label>
-                <input type="text" name="pekerjaan" class="input-control" value="{{ old('pekerjaan', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->pekerjaan) }}" placeholder="Contoh: Wiraswasta" required>
+                <input type="text" name="pekerjaan" class="input-control" value="{{ old('pekerjaan', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->pekerjaan) }}" placeholder="Contoh: Wiraswasta" oninput="this.value = this.value.replace(/[0-9]/g, '');" required>
               </div>
               <div class="form-group">
                 <label>Status Pernikahan</label>
@@ -540,23 +540,23 @@
               </div>
               <div class="form-group">
                 <label>RT</label>
-                <input type="text" name="rt" class="input-control" value="{{ old('rt', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->rt) }}" placeholder="Contoh: 001" required>
+                <input type="text" name="rt" class="input-control" value="{{ old('rt', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->rt) }}" placeholder="Contoh: 001" oninput="this.value = this.value.replace(/[^0-9]/g, '');" required>
               </div>
               <div class="form-group">
                 <label>RW</label>
-                <input type="text" name="rw" class="input-control" value="{{ old('rw', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->rw) }}" placeholder="Contoh: 005" required>
+                <input type="text" name="rw" class="input-control" value="{{ old('rw', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->rw) }}" placeholder="Contoh: 005" oninput="this.value = this.value.replace(/[^0-9]/g, '');" required>
               </div>
               <div class="form-group form-col-full">
                 <label>Kelurahan</label>
-                <input type="text" name="kelurahan" class="input-control" value="{{ old('kelurahan', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->kelurahan ?? 'Sambongpari') }}" placeholder="Contoh: Sambongpari" required>
+                <input type="text" name="kelurahan" class="input-control" value="{{ old('kelurahan', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->kelurahan ?? 'Sambongpari') }}" placeholder="Contoh: Sambongpari" oninput="this.value = this.value.replace(/[0-9]/g, '');" required>
               </div>
               <div class="form-group">
                 <label>Kecamatan</label>
-                <input type="text" name="kecamatan" class="input-control" value="{{ old('kecamatan', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->kecamatan ?? 'Mangkubumi') }}" placeholder="Contoh: Mangkubumi" required>
+                <input type="text" name="kecamatan" class="input-control" value="{{ old('kecamatan', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->kecamatan ?? 'Mangkubumi') }}" placeholder="Contoh: Mangkubumi" oninput="this.value = this.value.replace(/[0-9]/g, '');" required>
               </div>
               <div class="form-group">
                 <label>Kabupaten / Kota</label>
-                <input type="text" name="kota" class="input-control" value="{{ old('kota', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->kota ?? 'Tasikmalaya') }}" placeholder="Contoh: Tasikmalaya" required>
+                <input type="text" name="kota" class="input-control" value="{{ old('kota', (Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::guard('warga')->user())->kota ?? 'Tasikmalaya') }}" placeholder="Contoh: Tasikmalaya" oninput="this.value = this.value.replace(/[0-9]/g, '');" required>
               </div>
             </div>
             <div id="submitBtnContainer" style="margin-top: 24px; text-align: right; display: none;">
