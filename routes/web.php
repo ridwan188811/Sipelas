@@ -125,7 +125,6 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::get('/detail-pengajuan/{id}', [\App\Http\Controllers\AdminPengajuanController::class, 'show'])->name('detail-pengajuan');
     Route::post('/detail-pengajuan/{id}/proses', [\App\Http\Controllers\AdminPengajuanController::class, 'proses'])->name('proses-pengajuan');
     Route::post('/send-email-notification', [\App\Http\Controllers\AdminPengajuanController::class, 'sendEmailNotification'])->name('send-email-notification');
-    Route::get('/export-excel', [\App\Http\Controllers\AdminPengajuanController::class, 'exportExcel'])->name('export-excel');
 });
 
 // User Routes
